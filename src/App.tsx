@@ -1,12 +1,9 @@
-import { useState } from "react";
+import { Component, useState } from "react";
 import "./App.css";
+import Navbar from "./components/Navbar";
 
 function App() {
-  return (
-    <div className="text-yellow-200 text-2xl font-bold">
-      Tailwind đang hoạt động
-    </div>
-  );
+  return <Navbar />;
 }
 
 export default App;
