@@ -8,9 +8,9 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-between px-28 py-3 border-t-2 bg-[#FDFCF0]">
+    <footer className="flex items-center justify-between h-30 px-38 py-3 border-t-2 bg-[#FDFCF0]">
       {/* Logo */}
-      <div className="fond-bold text-2xl">Logo</div>
+      <div className="font-bold text-5xl">Logo</div>
 
       {/* About us */}
       <div className="flex items-center gap-8">

@@ -3,7 +3,7 @@ import { Search, User, Ticket, Popcorn } from "lucide-react";
 export default function Navbar() {
   return (
     <nav
-      className="flex items-center justify-between px-28 py-3 shadow-none border-b-2 "
+      className="flex items-center justify-between px-38 py-3 shadow-none border-b-2 "
       style={{ backgroundColor: "#FDFCF0" }}
     >
       {/* Logo */}
