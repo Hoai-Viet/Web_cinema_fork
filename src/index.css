@@ -1,1 +1,49 @@
+@font-face {
+  font-family: Anton-Regular;
+  src: url("../src/assets/fonts/Anton-Regular.ttf");
+}
+
+@font-face {
+  font-family: Roboto-SemiBold;
+  src: url("../src/assets/fonts/Roboto-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: Roboto-Thin;
+  src: url("../src/assets//fonts/Roboto-Thin.ttf");
+}
+
+@font-face {
+  font-family: Roboto_Condensed-Black;
+  src: url("../src/assets/fonts/Roboto_Condensed-Black.ttf");
+}
+
+@font-face {
+  font-family: Roboto-Black;
+  src: url("../src/assets/fonts/Roboto-Black.ttf");
+}
+
+@font-face {
+  font-family: Roboto-Light;
+  src: url("../src/assets/fonts/Roboto-Light.ttf");
+}
+
 @import "tailwindcss";
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0; /* làm trong suốt */
+  cursor: pointer;
+}
+
+@theme {
+  --font-anton: Anton-Regular, "sans-serif";
+  --font-roboto-semibold: Roboto-SemiBold, "sans-serif";
+  --font-roboto-thin: Roboto-Thin, "sans-serif";
+  --font-roboto_condensed-black: Roboto_Condensed-Black, "sans-serif";
+  --font-roboto-black: Roboto-Black, "sans-serif";
+  --font-roboto-light: Roboto-Light, "sans-serif";
+}
+
+.slick-slide > div {
+  margin: 0 10px;
+}

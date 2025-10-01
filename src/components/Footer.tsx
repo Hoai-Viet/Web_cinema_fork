@@ -8,15 +8,15 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-between h-30 px-38 py-3 border-t-2 bg-[#FDFCF0]">
+    <footer className="flex items-center justify-between font-anton py-5 border-t-1 border-white bg-[#000235] px-40">
       {/* Logo */}
-      <div className="font-bold text-5xl">Logo</div>
+      <div className="text-5xl text-white  ">Logo</div>
 
       {/* About us */}
       <div className="flex items-center gap-8">
         <a
           href="https://www.linkedin.com/in/%C4%91%E1%BB%A9c-nguy%E1%BB%85n-an-253914356/"
-          className="font-medium underline hover:text-yellow-600 cursor-pointer"
+          className="text-white underline hover:text-[#A555EC] cursor-pointer"
         >
           About us
         </a>
@@ -24,14 +24,14 @@ export default function Footer() {
 
       {/* Follow us */}
       <div className="flex flex-col gap-2">
-        <div className="font-semibold underline"> Follow us</div>
+        <div className="underline text-white"> Follow us</div>
         <ul className="flex items-center gap-5">
           <li>
             <a
               href="https://www.facebook.com/nguynduc611"
               className="hover:cursor-pointer"
             >
-              <FontAwesomeIcon icon={faFacebook} />
+              <FontAwesomeIcon icon={faFacebook} className="text-white" />
             </a>
           </li>
           <li>
@@ -39,12 +39,12 @@ export default function Footer() {
               href="https://www.youtube.com/watch?v=HgIhKsLI5Ag&list=RDHgIhKsLI5Ag&start_radio=1"
               className="hover:curosr-pointer"
             >
-              <FontAwesomeIcon icon={faYoutube} />
+              <FontAwesomeIcon icon={faYoutube} className="text-white" />
             </a>
           </li>
           <li>
             <a href="https://x.com/CineStar" className="hover:cursor-pointer">
-              <FontAwesomeIcon icon={faTwitter} />
+              <FontAwesomeIcon icon={faTwitter} className="text-white" />
             </a>
           </li>
           <li>
@@ -52,7 +52,10 @@ export default function Footer() {
               href="https://www.instagram.com/duc_nguyen6114/"
               className="hover:cursor-pointer"
             >
-              <FontAwesomeIcon icon={faSquareInstagram} />
+              <FontAwesomeIcon
+                icon={faSquareInstagram}
+                className="text-white"
+              />
             </a>
           </li>
         </ul>
