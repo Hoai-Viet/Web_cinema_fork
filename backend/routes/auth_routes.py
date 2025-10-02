@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify,session
 from models import db, User
+from datetime import datetime,date 
 
 auth_routes = Blueprint("auth_routes", __name__)
 
@@ -7,7 +8,7 @@ auth_routes = Blueprint("auth_routes", __name__)
 @auth_routes.route("/signup", methods=["POST"])
 def signup():
     data = request.get_json()
-    if not data or not all(k in data for k in ("username", "email", "password")):
+    if not data or not all(k in data for k in ("username", "email", "password","birthday")):
         return jsonify({"message": "Missing required fields"}), 400
 
     if User.query.filter_by(email=data["email"]).first():
@@ -16,7 +17,9 @@ def signup():
     user = User(
         username=data["username"],
         email=data["email"],
-        password=data["password"]
+        password=data["password"],
+        birthday=data["birthday"],
+        confirm_password=data["password"]
     )
     db.session.add(user)
     db.session.commit()

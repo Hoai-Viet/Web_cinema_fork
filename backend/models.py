@@ -12,9 +12,9 @@ class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
+    birthday = db.Column(db.Date, nullable=True)  
     password = db.Column(db.String(255), nullable=False)   # <- plain text
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
     tickets = db.relationship("Ticket", backref="user", lazy=True)
 
 
@@ -30,14 +30,29 @@ class Movie(db.Model):
 
     showtimes = db.relationship("Showtime", backref="movie", lazy=True)
 
+class Cinema(db.Model):
+    __tablename__ = "cinemas"
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    name = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(50))
+
+    # 1 rạp có nhiều phòng
+    rooms = db.relationship("Room", backref="cinema", lazy=True)
+
+
 class Room(db.Model):
     __tablename__ = "rooms"
+
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    cinema_id = db.Column(db.String(36), db.ForeignKey("cinemas.id"), nullable=False)  # liên kết với rạp
     name = db.Column(db.String(100), nullable=False)
     total_seats = db.Column(db.Integer, nullable=False)
 
     seats = db.relationship("Seat", backref="room", lazy=True)
     showtimes = db.relationship("Showtime", backref="room", lazy=True)
+
 
 class Seat(db.Model):
     __tablename__ = "seats"
