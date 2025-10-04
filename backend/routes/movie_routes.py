@@ -1,39 +1,14 @@
-from flask import Blueprint, jsonify
-from models import db, Movie
+from flask import Blueprint
+from controllers.movie_controllers import (
+    get_movies, get_movie, create_movie,
+    update_movie, delete_movie
+)
 
 movie_routes = Blueprint("movie_routes", __name__)
 
-# Lấy danh sách phim
-@movie_routes.route("/movies", methods=["GET"])
-def get_movies():
-    movies = Movie.query.all()
-    result = []
-    for movie in movies:
-        result.append({
-            "id": movie.id,
-            "title": movie.title,
-            "description": movie.description,
-            "duration_minutes": movie.duration_minutes,
-            "genre": movie.genre,
-            "release_date": movie.release_date.isoformat() if movie.release_date else None,
-            "poster_url": movie.poster_url
-        })
-    return jsonify(result)
-
-# Lấy chi tiết phim theo id
-@movie_routes.route("/movies/<movie_id>", methods=["GET"])
-def get_movie(movie_id):
-    movie = Movie.query.get(movie_id)
-    if not movie:
-        return jsonify({"message": "Movie not found"}), 404
-
-    result = {
-        "id": movie.id,
-        "title": movie.title,
-        "description": movie.description,
-        "duration_minutes": movie.duration_minutes,
-        "genre": movie.genre,
-        "release_date": movie.release_date.isoformat() if movie.release_date else None,
-        "poster_url": movie.poster_url
-    }
-    return jsonify(result)
+# Routes
+movie_routes.route("/movies", methods=["GET"])(get_movies)
+movie_routes.route("/movies/<movie_id>", methods=["GET"])(get_movie)
+movie_routes.route("/movies", methods=["POST"])(create_movie)
+movie_routes.route("/movies/<movie_id>", methods=["PUT"])(update_movie)
+movie_routes.route("/movies/<movie_id>", methods=["DELETE"])(delete_movie)
