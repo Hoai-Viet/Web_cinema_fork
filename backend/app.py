@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS  
 from models import db
 from config import Config
 from routes.auth_routes import auth_routes
@@ -8,10 +9,14 @@ from routes.seat_routes import seat_routes
 from routes.tickets_route import ticket_routes  
 from routes.showtime_routes import showtime_routes
 from routes.cinema_routes import cinema_routes
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     db.init_app(app)
+
+    CORS(app, origins=["http://localhost:5703"])  
 
     # đăng ký blueprint
     app.register_blueprint(auth_routes, url_prefix="/auth")
@@ -28,8 +33,9 @@ def create_app():
 
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
-        db.create_all()   # tạo table nếu chưa có
+        db.create_all()  
     app.run(debug=True)

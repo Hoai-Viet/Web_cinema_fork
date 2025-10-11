@@ -27,7 +27,8 @@ class Movie(db.Model):
     genre = db.Column(db.String(100))
     release_date = db.Column(db.Date)
     poster_url = db.Column(db.Text)
-
+    country = db.Column(db.String(100)) 
+    age_rating = db.Column(db.String(10))
     showtimes = db.relationship("Showtime", backref="movie", lazy=True)
 
 class Cinema(db.Model):
@@ -38,7 +39,6 @@ class Cinema(db.Model):
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(50))
 
-    # 1 rạp có nhiều phòng
     rooms = db.relationship("Room", backref="cinema", lazy=True)
 
 
@@ -59,7 +59,7 @@ class Seat(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False)
 
-    seat_number = db.Column(db.String(10), nullable=False)  # VD: A1, A2, B5
+    seat_number = db.Column(db.String(10), nullable=False)
     seat_type = db.Column(db.Enum("Single", "Double", name="seat_types"), nullable=False)  
     tickets = db.relationship("Ticket", backref="seat", lazy=True)
 
