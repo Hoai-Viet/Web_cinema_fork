@@ -9,6 +9,7 @@ from routes.seat_routes import seat_routes
 from routes.tickets_route import ticket_routes  
 from routes.showtime_routes import showtime_routes
 from routes.cinema_routes import cinema_routes
+from routes.payments_routes import payment_routes
 
 
 def create_app():
@@ -26,6 +27,7 @@ def create_app():
     app.register_blueprint(ticket_routes, url_prefix="/ticket")
     app.register_blueprint(showtime_routes, url_prefix="/showtime") 
     app.register_blueprint(cinema_routes, url_prefix="/cinema") 
+    app.register_blueprint(payment_routes, url_prefix="/payment")
     
     @app.route("/")
     def home():
