@@ -8,9 +8,7 @@ db = SQLAlchemy()
 def generate_uuid():
     return str(uuid.uuid4())
 
-# ==========================
-# 🧍 USER
-# ==========================
+
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -22,9 +20,7 @@ class User(db.Model):
 
     tickets = db.relationship("Ticket", backref="user", lazy=True)
 
-# ==========================
-# 🏙️ CITY
-# ==========================
+
 class City(db.Model):
     __tablename__ = "cities"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -32,9 +28,7 @@ class City(db.Model):
 
     cinemas = db.relationship("Cinema", backref="city", lazy=True)
 
-# ==========================
-# 🎦 CINEMA
-# ==========================
+
 class Cinema(db.Model):
     __tablename__ = "cinemas"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -45,9 +39,7 @@ class Cinema(db.Model):
 
     rooms = db.relationship("Room", backref="cinema", lazy=True)
 
-# ==========================
-# 🪑 ROOM
-# ==========================
+
 class Room(db.Model):
     __tablename__ = "rooms"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -59,9 +51,7 @@ class Room(db.Model):
     seats = db.relationship("Seat", backref="room", lazy=True)
     showtimes = db.relationship("Showtime", backref="room", lazy=True)
 
-# ==========================
-# 💺 SEAT
-# ==========================
+
 class Seat(db.Model):
     __tablename__ = "seats"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -71,9 +61,7 @@ class Seat(db.Model):
 
     tickets = db.relationship("Ticket", backref="seat", lazy=True)
 
-# ==========================
-# 🎬 MOVIE
-# ==========================
+
 class Movie(db.Model):
     __tablename__ = "movies"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -90,9 +78,7 @@ class Movie(db.Model):
 
     showtimes = db.relationship("Showtime", backref="movie", lazy=True)
 
-# ==========================
-# 🕒 SHOWTIME
-# ==========================
+
 class Showtime(db.Model):
     __tablename__ = "showtimes"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -102,22 +88,18 @@ class Showtime(db.Model):
     end_time = db.Column(db.DateTime)
     tickets = db.relationship("Ticket", backref="showtime", lazy=True)
 
-# ==========================
-# 🎟️ TICKET TYPE
-# ==========================
+
 class TicketType(db.Model):
     __tablename__ = "ticket_types"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    name = db.Column(db.String(50), nullable=False)  # Người lớn, HSSV, Trẻ em, v.v.
+    name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255))
     base_price = db.Column(db.Float, nullable=False)
     room_type = db.Column(db.Enum("Standard", "Deluxe", name="ticket_room_types"), nullable=False)
 
     tickets = db.relationship("Ticket", backref="ticket_type", lazy=True)
 
-# ==========================
-# 🎟️ TICKET
-# ==========================
+
 class Ticket(db.Model):
     __tablename__ = "tickets"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -130,9 +112,7 @@ class Ticket(db.Model):
 
     snacks = db.relationship("SnackCombo", secondary="ticket_snack", backref="tickets")
 
-# ==========================
-# 🍿 SNACK COMBO
-# ==========================
+
 class SnackCombo(db.Model):
     __tablename__ = "snack_combos"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -149,21 +129,15 @@ ticket_snack = db.Table(
     db.Column("quantity", db.Integer, default=1)
 )
 
-# ==========================
-# 💰 PAYMENT
-# ==========================
 class Payment(db.Model):
     __tablename__ = "payments"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    payment_method = db.Column(db.Enum("Momo", "ZaloPay", "CreditCard", "Cash", name="payment_methods"), nullable=False)
+    payment_method = db.Column(db.Enum("Momo","Cash", name="payment_methods"), nullable=False)
     status = db.Column(db.Enum("Pending", "Completed", "Failed", name="payment_statuses"), default="Pending")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# ==========================
-# 🎁 PROMOTION
-# ==========================
 class Promotion(db.Model):
     __tablename__ = "promotions"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
