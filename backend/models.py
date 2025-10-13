@@ -111,7 +111,7 @@ class SnackCombo(db.Model):
     description = db.Column(db.String(255))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.Text)
-
+Combo = SnackCombo
 ticket_snack = db.Table(
     "ticket_snack",
     db.Column("ticket_id", db.String(36), db.ForeignKey("tickets.id"), primary_key=True),
@@ -137,3 +137,14 @@ class Promotion(db.Model):
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
     image_url = db.Column(db.Text)
+
+class TicketCombo(db.Model):
+    __tablename__ = "ticket_combos"
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False)
+    combo_id = db.Column(db.String(36), db.ForeignKey("snack_combos.id"), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+
+    ticket = db.relationship("Ticket", backref="ticket_combos")
+    combo = db.relationship("SnackCombo", backref="ticket_combos")
