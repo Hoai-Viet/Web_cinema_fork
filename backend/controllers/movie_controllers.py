@@ -1,6 +1,5 @@
 from flask import jsonify, request
 from models import db, Movie
-from datetime import datetime
 
 # 🟢 Lấy danh sách phim (có hỗ trợ lọc theo thể loại, quốc gia, trạng thái)
 def get_movies():
@@ -25,7 +24,7 @@ def get_movies():
             "description": movie.description,
             "duration_minutes": movie.duration_minutes,
             "genre": movie.genre,
-            "release_date": movie.release_date.isoformat() if movie.release_date else None,
+            "movie_content": movie.movie_content,
             "poster_url": movie.poster_url,
             "country": movie.country,
             "age_rating": movie.age_rating,
@@ -47,7 +46,7 @@ def get_movie(movie_id):
         "description": movie.description,
         "duration_minutes": movie.duration_minutes,
         "genre": movie.genre,
-        "release_date": movie.release_date.isoformat() if movie.release_date else None,
+        "movie_content": movie.movie_content,
         "poster_url": movie.poster_url,
         "country": movie.country,
         "age_rating": movie.age_rating,
@@ -67,20 +66,12 @@ def create_movie():
     if Movie.query.filter_by(title=data["title"]).first():
         return jsonify({"message": "Movie with this title already exists"}), 400
 
-    # Parse ngày phát hành
-    release_date = None
-    if data.get("release_date"):
-        try:
-            release_date = datetime.strptime(data["release_date"], "%Y-%m-%d").date()
-        except ValueError:
-            return jsonify({"message": "Invalid date format (YYYY-MM-DD required)"}), 400
-
     new_movie = Movie(
         title=data["title"],
         description=data.get("description"),
         duration_minutes=data["duration_minutes"],
         genre=data.get("genre"),
-        release_date=release_date,
+        movie_content=data.get("movie_content"),  # 🔄 thay cho release_date
         poster_url=data.get("poster_url"),
         country=data.get("country"),
         age_rating=data.get("age_rating"),
@@ -118,13 +109,7 @@ def update_movie(movie_id):
     movie.age_rating = data.get("age_rating", movie.age_rating)
     movie.language = data.get("language", movie.language)
     movie.status = data.get("status", movie.status)
-
-    # Parse lại release_date nếu có
-    if "release_date" in data:
-        try:
-            movie.release_date = datetime.strptime(data["release_date"], "%Y-%m-%d").date()
-        except ValueError:
-            return jsonify({"message": "Invalid date format (YYYY-MM-DD required)"}), 400
+    movie.movie_content = data.get("movie_content", movie.movie_content)  # 🔄 thay cho release_date
 
     try:
         db.session.commit()

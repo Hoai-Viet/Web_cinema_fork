@@ -63,13 +63,14 @@ class Movie(db.Model):
     description = db.Column(db.Text)
     genre = db.Column(db.String(100))
     duration_minutes = db.Column(db.Integer, nullable=False)
-    release_date = db.Column(db.Date)
+    movie_content = db.Column(db.Text)
     poster_url = db.Column(db.Text)
     country = db.Column(db.String(100))
     age_rating = db.Column(db.String(10))
     language = db.Column(db.String(50))
     status = db.Column(db.Enum("Now Showing", "Coming Soon", name="movie_statuses"), default="Coming Soon")
     showtimes = db.relationship("Showtime", backref="movie", lazy=True)
+
 
 
 class Showtime(db.Model):

@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask_jwt_extended import jwt_required
 from controllers.movie_controllers import (
     get_movies,
     get_movie,
@@ -9,11 +10,32 @@ from controllers.movie_controllers import (
 
 movie_routes = Blueprint("movie_routes", __name__)
 
-# Danh sách và tạo mới phim
-movie_routes.route("/movies", methods=["GET"])(get_movies)
-movie_routes.route("/movies", methods=["POST"])(create_movie)
+# 🟢 Lấy danh sách tất cả phim (chỉ user đã đăng nhập mới xem được)
+@movie_routes.route("/movies", methods=["GET"])
+@jwt_required()
+def get_all_movies():
+    return get_movies()
 
-# Các route chi tiết phim
-movie_routes.route("/movies/<string:movie_id>", methods=["GET"])(get_movie)
-movie_routes.route("/movies/<string:movie_id>", methods=["PUT"])(update_movie)
-movie_routes.route("/movies/<string:movie_id>", methods=["DELETE"])(delete_movie)
+# 🟢 Tạo mới phim
+@movie_routes.route("/movies", methods=["POST"])
+@jwt_required()
+def create_new_movie():
+    return create_movie()
+
+# 🟢 Lấy chi tiết phim theo ID
+@movie_routes.route("/movies/<string:movie_id>", methods=["GET"])
+@jwt_required()
+def get_movie_detail(movie_id):
+    return get_movie(movie_id)
+
+# 🟢 Cập nhật phim
+@movie_routes.route("/movies/<string:movie_id>", methods=["PUT"])
+@jwt_required()
+def update_movie_info(movie_id):
+    return update_movie(movie_id)
+
+# 🟢 Xóa phim
+@movie_routes.route("/movies/<string:movie_id>", methods=["DELETE"])
+@jwt_required()
+def delete_movie_info(movie_id):
+    return delete_movie(movie_id)

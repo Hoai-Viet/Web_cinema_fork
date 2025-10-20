@@ -9,37 +9,44 @@ import re
 
 # ====================== SIGNUP ======================
 def signup_user(data):
-    required_fields = ["username", "email", "password", "confirm_password", "birthdate"]
+    required_fields = ["username", "email", "password", "confirm_password", "birthday"]
     for field in required_fields:
         if field not in data:
             return jsonify({"message": f"{field} is required"}), 400
 
+    # Kiểm tra email trùng
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"message": "Email already exists"}), 400
 
+    # Kiểm tra username trùng
+    if User.query.filter_by(username=data["username"]).first():
+        return jsonify({"message": "Username already exists"}), 400
+
+    # Kiểm tra password
     if data["password"] != data["confirm_password"]:
         return jsonify({"message": "Passwords do not match"}), 400
 
-    # Validate password strength (optional)
     if len(data["password"]) < 6:
         return jsonify({"message": "Password must be at least 6 characters"}), 400
 
-    # Validate birthdate
+    # ✅ Validate birthday (phải đúng định dạng YYYY-MM-DD)
     try:
-        birthdate = datetime.strptime(data["birthdate"], "%Y-%m-%d").date()
+        birthday = datetime.strptime(data["birthday"], "%m-%d-%y").date()
     except ValueError:
-        return jsonify({"message": "Invalid birthdate format. Use YYYY-MM-DD"}), 400
+        return jsonify({"message": "Invalid birthday format. Use YYYY-MM-DD"}), 400
 
+    # ✅ Kiểm tra tuổi
     today = date.today()
-    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+    age = today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
     if age < 12:
         return jsonify({"message": "You must be at least 12 years old to sign up"}), 400
 
+    # ✅ Tạo user (không hash password)
     user = User(
         username=data["username"],
         email=data["email"],
-        password=data["password"], 
-        birthday=birthdate
+        password=data["password"],  # <--- không hash
+        birthday=birthday
     )
 
     db.session.add(user)
