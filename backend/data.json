@@ -1,0 +1,107 @@
+{
+    "cinemas": [
+      {"name": "CGV Vincom Đồng Khởi", "address": "12 Nguyễn Huệ, Quận 1", "phone": "0909123456"},
+      {"name": "Galaxy Nguyễn Du", "address": "116 Nguyễn Du, Q1", "phone": "02838234567"},
+      {"name": "Cinestar Phạm Hùng", "address": "Số 8 Phạm Hùng, Q8", "phone": "02838567890"},
+      {"name": "Lotte Cinema Gò Vấp", "address": "Số 3 Phan Văn Trị, Gò Vấp", "phone": "02839876543"},
+      {"name": "BHD Star Bitexco", "address": "Số 2 Hải Triều, Q1", "phone": "02839123456"}
+    ],
+    "movies": [
+      {
+        "title": "Inside Out 2",
+        "genre": "Animation",
+        "duration_minutes": 100,
+        "country": "USA",
+        "age_rating": "18+"
+      },
+      {
+        "title": "Dune: Part Two",
+        "genre": "Sci-Fi",
+        "duration_minutes": 165,
+        "country": "USA",
+        "age_rating": "18+"
+      },
+      {
+        "title": "Killers of the Flower Moon",
+        "genre": "Drama",
+        "duration_minutes": 180,
+        "country": "USA",
+        "age_rating": "18+"
+      },
+      {
+        "title": "Wish",
+        "genre": "Animation",
+        "duration_minutes": 110,
+        "country": "USA",
+        "age_rating": "15+"
+      },
+      {
+        "title": "The Marvels",
+        "genre": "Action",
+        "duration_minutes": 130,
+        "country": "USA",
+        "age_rating": "16+"
+      },
+      {
+        "title": "Chị ngã em nâng",
+        "genre": "Comedy",
+        "duration_minutes": 150,
+        "country": "Vietnam",
+        "age_rating": "16+"
+      }
+    ],
+    "rooms": [
+      {"name": "Room 1", "cinema_id": 1, "total_seats": 50},
+      {"name": "Room 2", "cinema_id": 1, "total_seats": 60}
+    ],
+    "seats": [
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 1},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 1},
+      {"seat_number": "A3", "seat_type": "Single", "room_id": 1},
+      {"seat_number": "B1", "seat_type": "Single", "room_id": 1},
+      {"seat_number": "B2", "seat_type": "Single", "room_id": 1},
+      {"seat_number": "C1", "seat_type": "Double", "room_id": 1},
+      {"seat_number": "C2", "seat_type": "Double", "room_id": 1},
+  
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 2},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 2},
+      {"seat_number": "B1", "seat_type": "Single", "room_id": 2},
+      {"seat_number": "B2", "seat_type": "Double", "room_id": 2},
+  
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 3},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 3},
+      {"seat_number": "A3", "seat_type": "Single", "room_id": 3},
+  
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 4},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 4},
+      {"seat_number": "B1", "seat_type": "Double", "room_id": 4},
+  
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 5},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 5},
+      {"seat_number": "B1", "seat_type": "Double", "room_id": 5},
+  
+      {"seat_number": "A1", "seat_type": "Single", "room_id": 6},
+      {"seat_number": "A2", "seat_type": "Single", "room_id": 6},
+      {"seat_number": "B1", "seat_type": "Double", "room_id": 6}
+    ],
+    "users": [
+      {"username": "duyen", "email": "duyen@example.com", "password": "duyen123"},
+      {"username": "kien", "email": "kien@example.com", "password": "kien123"},
+      {"username": "huy", "email": "huy@example.com", "password": "huy123"},
+      {"username": "phuong", "email": "phuong@example.com", "password": "phuong123"}
+    ],    
+    "showtimes": [
+      {"movie_id": 1, "room_id": 1, "start_time": "2025-10-05T10:00:00"},
+      {"movie_id": 1, "room_id": 2, "start_time": "2025-10-05T14:00:00"},
+      {"movie_id": 2, "room_id": 3, "start_time": "2025-10-05T18:00:00"},
+      {"movie_id": 3, "room_id": 4, "start_time": "2025-10-05T20:30:00"},
+      {"movie_id": 4, "room_id": 5, "start_time": "2025-10-06T09:00:00"},
+      {"movie_id": 5, "room_id": 6, "start_time": "2025-10-06T19:00:00"}
+    ],
+    "tickets": [
+      {"user_id": 1, "showtime_id": 1, "seat_id": 1, "price": 90000},
+      {"user_id": 2, "showtime_id": 1, "seat_id": 2, "price": 90000},
+      {"user_id": 3, "showtime_id": 2, "seat_id": 8, "price": 100000},
+      {"user_id": 4, "showtime_id": 3, "seat_id": 13, "price": 120000}
+    ]
+  }
