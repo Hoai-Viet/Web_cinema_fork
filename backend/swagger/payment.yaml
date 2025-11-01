@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  title: Payment API
+  version: 1.0.0
+  description: >
+    API quản lý thanh toán vé xem phim. Bao gồm các chức năng tạo thanh toán,
+    xem thông tin thanh toán theo vé, và cập nhật trạng thái thanh toán.
+
+tags:
+  - name: API Payment
+    description:
+
+paths:
+  /payments:
+    post:
+      tags:
+        - Payment
+      summary: Tạo mới thanh toán cho vé
+      description: Người dùng tạo giao dịch thanh toán cho vé đã đặt.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              ticket_id: "TCK12345"
+              amount: 120000
+              payment_method: "Credit Card"
+      responses:
+        "201":
+          description: Tạo thanh toán thành công
+          content:
+            application/json:
+              example:
+                message: Payment created successfully
+                payment_id: "PAY56789"
+                status: Pending
+        "400":
+          description: Thiếu thông tin hoặc dữ liệu không hợp lệ
+        "404":
+          description: Không tìm thấy vé tương ứng
+
+  /payments/ticket/{ticket_id}:
+    get:
+      tags:
+        - Payment
+      summary: Xem thông tin thanh toán theo ticket_id
+      description: Trả về thông tin chi tiết giao dịch thanh toán của một vé cụ thể.
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Mã vé cần xem thông tin thanh toán
+      responses:
+        "200":
+          description: Trả về chi tiết thanh toán thành công
+          content:
+            application/json:
+              example:
+                payment_id: "PAY56789"
+                ticket_id: "TCK12345"
+                amount: 120000
+                payment_method: "Credit Card"
+                status: Completed
+                created_at: "2025-10-22 14:30:00"
+        "404":
+          description: Không tìm thấy thông tin thanh toán cho vé
+
+  /payments/{payment_id}:
+    put:
+      tags:
+        - Payment
+      summary: Cập nhật trạng thái thanh toán
+      description: Admin hoặc hệ thống cập nhật trạng thái của giao dịch thanh toán.
+      parameters:
+        - name: payment_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Mã giao dịch thanh toán cần cập nhật
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              status: Completed
+      responses:
+        "200":
+          description: Cập nhật trạng thái thành công
+          content:
+            application/json:
+              example:
+                message: Payment updated to Completed
+        "400":
+          description: Trạng thái không hợp lệ
+        "404":
+          description: Không tìm thấy giao dịch thanh toán
+
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        payment_id:
+          type: string
+        ticket_id:
+          type: string
+        amount:
+          type: number
+        payment_method:
+          type: string
+        status:
+          type: string
+          enum: [Pending, Completed, Failed]
+        created_at:
+          type: string
+          format: date-time
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

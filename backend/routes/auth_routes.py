@@ -7,49 +7,38 @@ from controllers.auth_controllers import (
     refresh_token
 )
 from flask_jwt_extended import jwt_required
+from flasgger import swag_from
+import os
 
 auth_routes = Blueprint("auth_routes", __name__)
 
-# -----------------------------
-# Đăng ký tài khoản
-# -----------------------------
 @auth_routes.route("/signup", methods=["POST"])
+@swag_from("../swagger/auth_sign_up.yaml")
 def signup():
     data = request.get_json()
     return signup_user(data)
 
-
-# -----------------------------
-# Đăng nhập
-# -----------------------------
 @auth_routes.route("/login", methods=["POST"])
+# @swag_from("../swagger/auth_login.yaml")
 def login():
     data = request.get_json()
     return login_user(data)
 
-
-# -----------------------------
-# Đăng xuất
-# -----------------------------
-@auth_routes.route("/logout", methods=["POST"])
-@jwt_required()  # 🔐 chỉ user đã login (có token) mới được logout
-def logout():
-    return logout_user()
-
-
-# -----------------------------
-# Quên mật khẩu
-# -----------------------------
 @auth_routes.route("/forgot-password", methods=["POST"])
+# @swag_from("../swagger/auth_forgot_password.yaml")
 def forgot():
     data = request.get_json()
     return forgot_password(data)
 
+@auth_routes.route("/logout", methods=["POST"])
+@jwt_required()
+# @swag_from("../swagger/auth_logout.yaml")
+def logout():
+    return logout_user()
 
-# -----------------------------
-# Làm mới token (refresh)
-# -----------------------------
 @auth_routes.route("/refresh", methods=["POST"])
-@jwt_required(refresh=True)  # 🔐 chỉ được gọi bằng refresh token
+@jwt_required(refresh=True)
+# @swag_from("../swagger/auth_refresh.yaml")
 def refresh():
     return refresh_token()
+

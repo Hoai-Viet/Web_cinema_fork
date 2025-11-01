@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+  title: Ticket API
+  description: API quản lý vé xem phim — bao gồm tạo, cập nhật, hủy vé và lấy thông tin chi tiết.
+  version: 1.0.0
+tags:
+  - name: API Tickets
+    description:
+
+paths:
+  /tickets:
+    get:
+      tags:
+        - Tickets
+      summary: Lấy danh sách tất cả vé
+      responses:
+        200:
+          description: Danh sách vé được trả về thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+
+    post:
+      tags:
+        - Tickets
+      summary: Đặt vé mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketCreate"
+      responses:
+        201:
+          description: Đặt vé thành công
+        400:
+          description: Thiếu trường hoặc ghế đã được đặt
+        404:
+          description: Không tìm thấy user/showtime/seat
+
+  /tickets/{ticket_id}:
+    get:
+      tags:
+        - Tickets
+      summary: Lấy thông tin vé theo ID
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lấy vé thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ticket"
+        404:
+          description: Vé không tồn tại
+
+    put:
+      tags:
+        - Tickets
+      summary: Cập nhật thông tin vé
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TicketUpdate"
+      responses:
+        200:
+          description: Cập nhật vé thành công
+        400:
+          description: Ghế đã được đặt
+        404:
+          description: Không tìm thấy vé hoặc suất chiếu
+
+    delete:
+      tags:
+        - Tickets
+      summary: Hủy vé theo ID
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Hủy vé thành công
+        404:
+          description: Vé không tồn tại
+
+  /tickets/user/{user_id}:
+    get:
+      tags:
+        - Tickets
+      summary: Lấy danh sách vé của một người dùng
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Danh sách vé của user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TicketUserView"
+        404:
+          description: User không có vé nào
+
+  /tickets/{ticket_id}/details:
+    get:
+      tags:
+        - Tickets
+      summary: Lấy chi tiết vé bao gồm phim, phòng, combo và thanh toán
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lấy chi tiết vé thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDetails"
+        404:
+          description: Vé không tồn tại
+
+  /tickets/showtime/{showtime_id}/available-seats:
+    get:
+      tags:
+        - Tickets
+      summary: Lấy danh sách ghế trống của suất chiếu
+      parameters:
+        - name: showtime_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Danh sách ghế trống
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SeatAvailable"
+
+components:
+  schemas:
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        showtime_id:
+          type: string
+        seat_id:
+          type: string
+        price:
+          type: number
+        booked_at:
+          type: string
+          format: date-time
+
+    TicketCreate:
+      type: object
+      required:
+        - user_id
+        - showtime_id
+        - seat_id
+        - price
+      properties:
+        user_id:
+          type: string
+          example: "a7b9c3d1"
+        showtime_id:
+          type: string
+          example: "sht-123"
+        seat_id:
+          type: string
+          example: "seat-45"
+        price:
+          type: number
+          example: 95000
+
+    TicketUpdate:
+      type: object
+      properties:
+        seat_id:
+          type: string
+          example: "seat-46"
+        showtime_id:
+          type: string
+          example: "sht-124"
+        price:
+          type: number
+          example: 100000
+
+    TicketUserView:
+      type: object
+      properties:
+        id:
+          type: string
+        movie:
+          type: string
+        seat_number:
+          type: string
+        room:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        price:
+          type: number
+        booked_at:
+          type: string
+          format: date-time
+
+    SeatAvailable:
+      type: object
+      properties:
+        id:
+          type: string
+        seat_number:
+          type: string
+        seat_type:
+          type: string
+        room_type:
+          type: string
+
+    TicketDetails:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+        movie:
+          type: string
+        room:
+          type: string
+        seat_number:
+          type: string
+        showtime:
+          type: string
+          format: date-time
+        price:
+          type: number
+        booked_at:
+          type: string
+          format: date-time
+        combos:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              price:
+                type: number
+        payment_info:
+          type: array
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+              method:
+                type: string
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time

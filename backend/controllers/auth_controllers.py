@@ -31,7 +31,7 @@ def signup_user(data):
 
     # ✅ Validate birthday (phải đúng định dạng YYYY-MM-DD)
     try:
-        birthday = datetime.strptime(data["birthday"], "%m-%d-%y").date()
+        birthday = datetime.strptime(data["birthday"], "%Y-%m-%d").date()
     except ValueError:
         return jsonify({"message": "Invalid birthday format. Use YYYY-MM-DD"}), 400
 
@@ -45,7 +45,7 @@ def signup_user(data):
     user = User(
         username=data["username"],
         email=data["email"],
-        password=data["password"],  # <--- không hash
+        password=data["password"],
         birthday=birthday
     )
 

@@ -1,15 +1,15 @@
 tags:
-  - name: Cinema
-    description: API quản lý rạp chiếu phim và danh sách phòng chiếu thuộc rạp
+  - name: API Cinema
+    description:
 
 paths:
   /cinema:
     get:
       summary: Lấy danh sách tất cả rạp chiếu phim
-      tags: [Cinema]
+      tags: API Cinema
       responses:
         "200":
-          description: Danh sách các rạp chiếu phim
+          description:
           content:
             application/json:
               schema:

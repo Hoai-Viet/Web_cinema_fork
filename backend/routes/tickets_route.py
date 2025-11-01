@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
+from flasgger import swag_from
 from controllers.tickets_controllers import (
     get_all_tickets,
     get_ticket_by_id,
@@ -13,52 +14,68 @@ from controllers.tickets_controllers import (
 
 ticket_routes = Blueprint("ticket_routes", __name__)
 
-# ✅ Chỉ admin hoặc nhân viên mới nên xem tất cả vé
+# ✅ Lấy tất cả vé
 @ticket_routes.route("/tickets", methods=["GET"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["GET"])
 def get_tickets():
+    """Get all tickets"""
     return get_all_tickets()
 
 # ✅ Xem chi tiết 1 vé
 @ticket_routes.route("/tickets/<ticket_id>", methods=["GET"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["GET"])
 def get_ticket(ticket_id):
+    """Get a ticket by ID"""
     return get_ticket_by_id(ticket_id)
 
-# ✅ Xem vé của 1 user (chỉ user đó hoặc admin mới nên xem)
+# ✅ Xem vé của 1 user
 @ticket_routes.route("/tickets/user/<user_id>", methods=["GET"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["GET"])
 def get_user_tickets(user_id):
+    """Get tickets of a specific user"""
     return get_tickets_by_user(user_id)
 
-# ✅ Tạo vé (chỉ user đã đăng nhập)
+# ✅ Đặt vé mới
 @ticket_routes.route("/tickets", methods=["POST"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["POST"])
 def add_ticket():
+    """Create a new ticket"""
     data = request.get_json()
     return create_ticket(data)
 
-# ✅ Cập nhật vé (chỉ user hoặc admin)
+# ✅ Cập nhật vé
 @ticket_routes.route("/tickets/<ticket_id>", methods=["PUT"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["PUT"])
 def modify_ticket(ticket_id):
+    """Update a ticket"""
     data = request.get_json()
     return update_ticket(ticket_id, data)
 
-# ✅ Hủy vé (chỉ user)
+# ✅ Hủy vé
 @ticket_routes.route("/tickets/<ticket_id>", methods=["DELETE"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["DELETE"])
 def cancel_ticket(ticket_id):
+    """Delete (cancel) a ticket"""
     return delete_ticket(ticket_id)
 
-# ✅ Lấy ghế trống của suất chiếu (ai đăng nhập mới được xem)
+# ✅ Lấy ghế trống của suất chiếu
 @ticket_routes.route("/tickets/available-seats/<showtime_id>", methods=["GET"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["GET"])
 def available_seats(showtime_id):
+    """Get available seats for a showtime"""
     return get_available_seats(showtime_id)
 
-# ✅ Xem chi tiết vé (user cần đăng nhập)
+# ✅ Xem chi tiết vé
 @ticket_routes.route("/tickets/details/<ticket_id>", methods=["GET"])
 @jwt_required()
+@swag_from("../swagger/ticket.yaml", methods=["GET"])
 def ticket_details(ticket_id):
+    """Get detailed information of a ticket"""
     return get_ticket_details(ticket_id)

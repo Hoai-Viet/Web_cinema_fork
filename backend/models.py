@@ -4,26 +4,38 @@ import uuid
 
 db = SQLAlchemy()
 
+
 def generate_uuid():
     return str(uuid.uuid4())
+
+
+# Association table for Ticket <-> SnackCombo (many-to-many)
+ticket_snack = db.Table(
+    "ticket_snack",
+    db.Column("ticket_id", db.String(36), db.ForeignKey("tickets.id"), primary_key=True),
+    db.Column("snack_combo_id", db.String(36), db.ForeignKey("snack_combos.id"), primary_key=True),
+    db.Column("quantity", db.Integer, default=1, nullable=False)
+)
 
 
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     birthday = db.Column(db.Date, nullable=True)
     password = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    tickets = db.relationship("Ticket", backref="user", lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    tickets = db.relationship("Ticket", back_populates="user", lazy=True, cascade="all, delete-orphan")
 
 
 class City(db.Model):
     __tablename__ = "cities"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     name = db.Column(db.String(100), nullable=False, unique=True)
-    cinemas = db.relationship("Cinema", backref="city", lazy=True)
+
+    cinemas = db.relationship("Cinema", back_populates="city", lazy=True, cascade="all, delete-orphan")
 
 
 class Cinema(db.Model):
@@ -32,34 +44,48 @@ class Cinema(db.Model):
     name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(50))
-    city_id = db.Column(db.String(36), db.ForeignKey("cities.id"), nullable=False)
-    rooms = db.relationship("Room", backref="cinema", lazy=True)
+    city_id = db.Column(db.String(36), db.ForeignKey("cities.id"), nullable=False, index=True)
+
+    city = db.relationship("City", back_populates="cinemas")
+    rooms = db.relationship("Room", back_populates="cinema", lazy=True, cascade="all, delete-orphan")
 
 
 class Room(db.Model):
     __tablename__ = "rooms"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    cinema_id = db.Column(db.String(36), db.ForeignKey("cinemas.id"), nullable=False)
+    cinema_id = db.Column(db.String(36), db.ForeignKey("cinemas.id"), nullable=False, index=True)
     name = db.Column(db.String(100), nullable=False)
     total_seats = db.Column(db.Integer, nullable=False)
-    room_type = db.Column(db.Enum("Standard", "Deluxe", name="room_types"), nullable=False)
-    seats = db.relationship("Seat", backref="room", lazy=True)
-    showtimes = db.relationship("Showtime", backref="room", lazy=True)
+    room_type = db.Column(
+        db.Enum('2D', '3D', 'IMAX', name='room_types'),
+        nullable=False
+    )
+
+    cinema = db.relationship("Cinema", back_populates="rooms")
+    seats = db.relationship("Seat", back_populates="room", lazy=True, cascade="all, delete-orphan")
+    showtimes = db.relationship("Showtime", back_populates="room", lazy=True, cascade="all, delete-orphan")
+
 
 class Seat(db.Model):
     __tablename__ = "seats"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False)
+    room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False, index=True)
     seat_number = db.Column(db.String(10), nullable=False)
-    seat_type = db.Column(db.Enum("Single", "Double", name="seat_types"), nullable=False)
+    seat_type = db.Column(
+        db.Enum('Standard', 'VIP', 'Sweetbox', name='seat_types'),
+        nullable=False
+    )
 
-    tickets = db.relationship("Ticket", backref="seat", lazy=True)
+    room = db.relationship("Room", back_populates="seats")
+    tickets = db.relationship("Ticket", back_populates="seat", lazy=True)
+
+    __table_args__ = (db.UniqueConstraint('room_id', 'seat_number', name='uix_room_seat'),)
 
 
 class Movie(db.Model):
     __tablename__ = "movies"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    title = db.Column(db.String(255), nullable=False)
+    title = db.Column(db.String(255), nullable=False, index=True)
     description = db.Column(db.Text)
     genre = db.Column(db.String(100))
     duration_minutes = db.Column(db.Integer, nullable=False)
@@ -68,19 +94,28 @@ class Movie(db.Model):
     country = db.Column(db.String(100))
     age_rating = db.Column(db.String(10))
     language = db.Column(db.String(50))
-    status = db.Column(db.Enum("Now Showing", "Coming Soon", name="movie_statuses"), default="Coming Soon")
-    showtimes = db.relationship("Showtime", backref="movie", lazy=True)
+    status = db.Column(
+        db.Enum("Now Showing", "Coming Soon", name="movie_statuses"),
+        default="Coming Soon",
+        nullable=False
+    )
 
+    showtimes = db.relationship("Showtime", back_populates="movie", lazy=True, cascade="all, delete-orphan")
 
 
 class Showtime(db.Model):
     __tablename__ = "showtimes"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    movie_id = db.Column(db.String(36), db.ForeignKey("movies.id"), nullable=False)
-    room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False)
+    movie_id = db.Column(db.String(36), db.ForeignKey("movies.id"), nullable=False, index=True)
+    room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False, index=True)
+    start_time = db.Column(db.DateTime, nullable=False, index=True)
     end_time = db.Column(db.DateTime)
-    tickets = db.relationship("Ticket", backref="showtime", lazy=True)
+
+    movie = db.relationship("Movie", back_populates="showtimes")
+    room = db.relationship("Room", back_populates="showtimes")
+    tickets = db.relationship("Ticket", back_populates="showtime", lazy=True, cascade="all, delete-orphan")
+
+    __table_args__ = (db.UniqueConstraint('room_id', 'start_time', name='uix_room_starttime'),)
 
 
 class TicketType(db.Model):
@@ -89,20 +124,37 @@ class TicketType(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255))
     base_price = db.Column(db.Float, nullable=False)
-    room_type = db.Column(db.Enum("Standard", "Deluxe", name="ticket_room_types"), nullable=False)
-    tickets = db.relationship("Ticket", backref="ticket_type", lazy=True)
+    room_type = db.Column(
+        db.Enum("Standard", "Deluxe", name="ticket_room_types"),
+        nullable=False
+    )
+
+    tickets = db.relationship("Ticket", back_populates="ticket_type", lazy=True)
 
 
 class Ticket(db.Model):
     __tablename__ = "tickets"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False)
-    showtime_id = db.Column(db.String(36), db.ForeignKey("showtimes.id"), nullable=False)
-    seat_id = db.Column(db.String(36), db.ForeignKey("seats.id"), nullable=False)
-    ticket_type_id = db.Column(db.String(36), db.ForeignKey("ticket_types.id"), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False, index=True)
+    showtime_id = db.Column(db.String(36), db.ForeignKey("showtimes.id"), nullable=False, index=True)
+    seat_id = db.Column(db.String(36), db.ForeignKey("seats.id"), nullable=False, index=True)
+    ticket_type_id = db.Column(db.String(36), db.ForeignKey("ticket_types.id"), nullable=False, index=True)
     price = db.Column(db.Float, nullable=False)
-    booked_at = db.Column(db.DateTime, default=datetime.utcnow)
-    snacks = db.relationship("SnackCombo", secondary="ticket_snack", backref="tickets")
+    booked_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", back_populates="tickets")
+    showtime = db.relationship("Showtime", back_populates="tickets")
+    seat = db.relationship("Seat", back_populates="tickets")
+    ticket_type = db.relationship("TicketType", back_populates="tickets")
+
+    # Many-to-many with SnackCombo
+    snack_combos = db.relationship(
+        "SnackCombo",
+        secondary=ticket_snack,
+        back_populates="tickets"
+    )
+
+    payment = db.relationship("Payment", uselist=False, back_populates="ticket", cascade="all, delete-orphan")
 
 
 class SnackCombo(db.Model):
@@ -112,22 +164,33 @@ class SnackCombo(db.Model):
     description = db.Column(db.String(255))
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.Text)
-Combo = SnackCombo
-ticket_snack = db.Table(
-    "ticket_snack",
-    db.Column("ticket_id", db.String(36), db.ForeignKey("tickets.id"), primary_key=True),
-    db.Column("snack_id", db.String(36), db.ForeignKey("snack_combos.id"), primary_key=True),
-    db.Column("quantity", db.Integer, default=1)
-)
+
+    # Many-to-many with Ticket
+    tickets = db.relationship(
+        "Ticket",
+        secondary=ticket_snack,
+        back_populates="snack_combos"
+    )
+
 
 class Payment(db.Model):
     __tablename__ = "payments"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False)
+    ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False, unique=True)
     amount = db.Column(db.Float, nullable=False)
-    payment_method = db.Column(db.Enum("Cash", name="payment_methods"), nullable=False)
-    status = db.Column(db.Enum("Pending", "Completed", "Failed", name="payment_statuses"), default="Pending")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    payment_method = db.Column(
+        db.Enum("Cash", "Credit Card", "Momo", "ZaloPay", name="payment_methods"),
+        nullable=False
+    )
+    status = db.Column(
+        db.Enum("Pending", "Completed", "Failed", name="payment_statuses"),
+        default="Pending",
+        nullable=False
+    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    ticket = db.relationship("Ticket", back_populates="payment")
+
 
 class Promotion(db.Model):
     __tablename__ = "promotions"
@@ -139,13 +202,6 @@ class Promotion(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     image_url = db.Column(db.Text)
 
-class TicketCombo(db.Model):
-    __tablename__ = "ticket_combos"
-
-    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False)
-    combo_id = db.Column(db.String(36), db.ForeignKey("snack_combos.id"), nullable=False)
-    quantity = db.Column(db.Integer, default=1)
-
-    ticket = db.relationship("Ticket", backref="ticket_combos")
-    combo = db.relationship("SnackCombo", backref="ticket_combos")
+    __table_args__ = (
+        db.CheckConstraint('discount_percent >= 0 AND discount_percent <= 100', name='check_discount_range'),
+    )

@@ -1,132 +1,162 @@
-from app import db, create_app
-from models import User, Movie, Cinema, Room, Seat, Showtime, Ticket, generate_uuid
+# seed_data.py
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+from app import create_app
+from models import db, City, Cinema, Room, Movie, Seat, Showtime, SnackCombo
+from models import generate_uuid
 
-# ✅ Khởi tạo Flask app trước khi mở context
 app = create_app()
+app.app_context().push()
 
-# Đọc dữ liệu và seed
-with app.app_context():  
+def seed_from_json():
+    print("Bắt đầu seed dữ liệu từ data.json...")
+
     with open("data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    print("🚀 Bắt đầu seed dữ liệu...")
+    # --- Seed Cities ---
+    if City.query.count() == 0:
+        print("Thêm thành phố...")
+        cities = [City(id=generate_uuid(), name=c["name"]) for c in data["cities"]]
+        db.session.bulk_save_objects(cities)
+        db.session.commit()
 
-    # ======== 1️⃣ Thêm Cinema ========
-    print("🏢 Thêm rạp chiếu phim...")
-    cinemas = []
-    for c in data["cinemas"]:
-        cinema = Cinema(
-            id=generate_uuid(),
-            name=c["name"],
-            address=c["address"],
-            phone=c["phone"]
-        )
-        cinemas.append(cinema)
-    db.session.add_all(cinemas)
-    db.session.commit()
-
-    # ======== 2️⃣ Thêm Movie ========
-    print("🎬 Thêm phim...")
-    movies = []
-    for m in data["movies"]:
-        movie = Movie(
-            id=generate_uuid(),
-            title=m["title"],
-            genre=m["genre"],
-            duration_minutes=m["duration_minutes"],
-            country=m.get("country"),
-            age_rating=m.get("age_rating")
-        )
-        movies.append(movie)
-    db.session.add_all(movies)
-    db.session.commit()
-
-    # ======== 3️⃣ Thêm Room ========
-    print("🏠 Thêm phòng...")
-    rooms = []
-    for r in data["rooms"]:
-        cinema_index = r["cinema_id"] - 1
-        if 0 <= cinema_index < len(cinemas):
-            room = Room(
+    # --- Seed Cinemas ---
+    if Cinema.query.count() == 0:
+        print("Thêm rạp chiếu...")
+        cinemas = []
+        for c in data["cinemas"]:
+            city = City.query.filter_by(name=c["city"]).first()
+            if not city:
+                print(f"Không tìm thấy thành phố: {c['city']}")
+                continue
+            cinemas.append(Cinema(
                 id=generate_uuid(),
-                cinema_id=cinemas[cinema_index].id,
+                name=c["name"],
+                address=c["address"],
+                phone=c.get("phone"),
+                city_id=city.id
+            ))
+        db.session.bulk_save_objects(cinemas)
+        db.session.commit()
+
+    # --- Seed Rooms ---
+    if Room.query.count() == 0:
+        print("Thêm phòng chiếu...")
+        rooms = []
+        for r in data["rooms"]:
+            cinema = Cinema.query.filter_by(name=r["cinema"]).first()
+            if not cinema:
+                print(f"Không tìm thấy rạp: {r['cinema']}")
+                continue
+            if r["room_type"] not in ['2D', '3D', 'IMAX']:
+                print(f"Loại phòng không hợp lệ: {r['room_type']}")
+                continue
+            rooms.append(Room(
+                id=generate_uuid(),
+                cinema_id=cinema.id,
                 name=r["name"],
-                total_seats=r["total_seats"]
-            )
-            rooms.append(room)
-    db.session.add_all(rooms)
-    db.session.commit()
+                total_seats=r["total_seats"],
+                room_type=r["room_type"]
+            ))
+        db.session.bulk_save_objects(rooms)
+        db.session.commit()
 
-    # ======== 4️⃣ Thêm Seat ========
-    print("💺 Thêm ghế...")
-    seats = []
-    for s in data["seats"]:
-        room_index = s["room_id"] - 1
-        if 0 <= room_index < len(rooms):
-            seat = Seat(
+    # --- Seed Movies ---
+    if Movie.query.count() == 0:
+        print("Thêm phim...")
+        movies = []
+        for m in data["movies"]:
+            status = m.get("status", "Coming Soon")
+            if status not in ["Now Showing", "Coming Soon"]:
+                status = "Coming Soon"
+            movies.append(Movie(
                 id=generate_uuid(),
-                room_id=rooms[room_index].id,
-                seat_number=s["seat_number"],
-                seat_type=s["seat_type"]
-            )
-            seats.append(seat)
-    db.session.add_all(seats)
-    db.session.commit()
+                title=m["title"],
+                description=m.get("description"),
+                genre=m.get("genre"),
+                duration_minutes=m["duration_minutes"],
+                movie_content=m.get("movie_content"),
+                poster_url=m.get("poster_url"),
+                country=m.get("country"),
+                age_rating=m.get("age_rating"),
+                language=m.get("language"),
+                status=status
+            ))
+        db.session.bulk_save_objects(movies)
+        db.session.commit()
 
-    # ======== 5️⃣ Thêm User ========
-    print("👤 Thêm người dùng...")
-    users = []
-    for u in data["users"]:
-        user = User(
-            id=generate_uuid(),
-            username=u["username"],
-            email=u["email"],
-            password=u["password"]
-        )
-        users.append(user)
-    db.session.add_all(users)
-    db.session.commit()
+    # --- Seed Seats (tự động theo total_seats) ---
+    if Seat.query.count() == 0:
+        print("Tạo ghế tự động cho từng phòng...")
+        seats = []
+        rooms = Room.query.all()
+        for room in rooms:
+            total = room.total_seats
+            for i in range(1, total + 1):
+                seat_number = f"{chr(64 + (i-1) // 10 + 1)}{(i-1) % 10 + 1}"  # A1, A2, ..., B1
+                seat_type = "VIP" if i <= total // 4 else "Sweetbox" if i > total * 3 // 4 else "Standard"
+                seats.append(Seat(
+                    id=generate_uuid(),
+                    room_id=room.id,
+                    seat_number=seat_number,
+                    seat_type=seat_type
+                ))
+        db.session.bulk_save_objects(seats)
+        db.session.commit()
 
-    # ======== 6️⃣ Thêm Showtime ========
-    print("🕒 Thêm suất chiếu...")
-    showtimes = []
-    for s in data["showtimes"]:
-        movie_index = s["movie_id"] - 1
-        room_index = s["room_id"] - 1
-        if 0 <= movie_index < len(movies) and 0 <= room_index < len(rooms):
-            showtime = Showtime(
+    # --- Seed Showtimes ---
+    if Showtime.query.count() == 0:
+        print("Thêm suất chiếu mẫu...")
+        movie = Movie.query.first()
+        room = Room.query.first()
+        if not movie or not room:
+            print("Không có phim hoặc phòng để tạo suất chiếu")
+        else:
+            base_time = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+            showtimes = [
+                Showtime(
+                    id=generate_uuid(),
+                    movie_id=movie.id,
+                    room_id=room.id,
+                    start_time=base_time + timedelta(hours=14),
+                    end_time=base_time + timedelta(hours=16, minutes=movie.duration_minutes)
+                ),
+                Showtime(
+                    id=generate_uuid(),
+                    movie_id=movie.id,
+                    room_id=room.id,
+                    start_time=base_time + timedelta(hours=18),
+                    end_time=base_time + timedelta(hours=20, minutes=movie.duration_minutes)
+                ),
+                Showtime(
+                    id=generate_uuid(),
+                    movie_id=movie.id,
+                    room_id=room.id,
+                    start_time=base_time + timedelta(days=1, hours=15),
+                    end_time=base_time + timedelta(days=1, hours=17, minutes=movie.duration_minutes)
+                )
+            ]
+            db.session.bulk_save_objects(showtimes)
+            db.session.commit()
+
+    # --- Seed Snack Combos ---
+    if SnackCombo.query.count() == 0:
+        print("Thêm combo đồ ăn...")
+        combos = []
+        for c in data["snack_combos"]:
+            combos.append(SnackCombo(
                 id=generate_uuid(),
-                movie_id=movies[movie_index].id,
-                room_id=rooms[room_index].id,
-                start_time=datetime.fromisoformat(s["start_time"])
-            )
-            showtimes.append(showtime)
-    db.session.add_all(showtimes)
-    db.session.commit()
+                name=c["name"],
+                description=c.get("description"),
+                price=c["price"],
+                image_url=c.get("image_url", "https://via.placeholder.com/300x200?text=Combo")
+            ))
+        db.session.bulk_save_objects(combos)
+        db.session.commit()
 
-    # ======== 7️⃣ Thêm Ticket ========
-    print("🎟️ Thêm vé...")
-    tickets = []
-    for t in data["tickets"]:
-        user_index = t["user_id"] - 1
-        showtime_index = t["showtime_id"] - 1
-        seat_index = t["seat_id"] - 1
-        if (
-            0 <= user_index < len(users)
-            and 0 <= showtime_index < len(showtimes)
-            and 0 <= seat_index < len(seats)
-        ):
-            ticket = Ticket(
-                id=generate_uuid(),
-                user_id=users[user_index].id,
-                showtime_id=showtimes[showtime_index].id,
-                seat_id=seats[seat_index].id,
-                price=t["price"]
-            )
-            tickets.append(ticket)
-    db.session.add_all(tickets)
-    db.session.commit()
+    print("Seed dữ liệu hoàn tất!")
 
-    print("✅ Seed dữ liệu hoàn tất!")
+
+if __name__ == "__main__":
+    seed_from_json()

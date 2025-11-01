@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, verify_jwt_in_request, get_jwt_identity
 from models import db
@@ -14,6 +13,7 @@ from routes.cinema_routes import cinema_routes
 from routes.payments_routes import payment_routes
 from routes.combo_routes import combo_routes
 from routes.ticket_type_routes import ticket_type_routes
+from flask_cors import CORS
 
 
 def create_app():
@@ -28,7 +28,7 @@ def create_app():
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = app.config.get("JWT_REFRESH_TOKEN_EXPIRES", 86400)
 
     # ---------------------------
-    # SWAGGER CONFIG
+    # ✅ SWAGGER CONFIG (sửa lại để hiển thị body)
     # ---------------------------
     swagger_config = {
         "headers": [],
@@ -45,6 +45,7 @@ def create_app():
         "specs_route": "/apidocs/",
     }
 
+    # ⚡ Dùng chuẩn Swagger 2.0 (Flasgger hỗ trợ tốt nhất)
     swagger_template = {
         "swagger": "2.0",
         "info": {
@@ -52,11 +53,12 @@ def create_app():
             "description": "API documentation for the Flask backend (Auth, Movie, Room, Cinema, etc.)",
             "version": "1.0.0",
             "contact": {
-                "name": "Your Team",
-                "email": "support@cinema.com"
+                "name": "Doan Hoai Viet",
+                "email": "yashinwaa@gmail.com"
             }
         },
-        "basePath": "/",
+        "basePath": "/",  # quan trọng: giúp Swagger nhận đúng prefix
+        "schemes": ["http"],  # hoặc https nếu deploy
         "securityDefinitions": {
             "Bearer": {
                 "type": "apiKey",
@@ -65,9 +67,10 @@ def create_app():
                 "description": "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
             }
         },
-        "security": [{"Bearer": []}]
+        "security": [{"Bearer": []}],
     }
 
+    # ✅ Tạo Swagger instance
     Swagger(app, config=swagger_config, template=swagger_template)
 
     # ---------------------------
@@ -77,7 +80,7 @@ def create_app():
     jwt = JWTManager(app)
 
     # ---------------------------------
-    # Middleware kiểm tra JWT (bảo vệ toàn bộ API trừ các route mở)
+    # Middleware kiểm tra JWT
     # ---------------------------------
     @app.before_request
     def check_jwt():

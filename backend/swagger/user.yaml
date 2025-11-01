@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: Combo API
+  version: 1.0.0
+  description: API quản lý user
+
+paths:
+  /user/me:
+    get:
+      tags:
+        - Users
+      summary: Get current user profile
+      description: Retrieve detailed profile information for the currently logged-in user.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successfully retrieved user profile.
+          content:
+            application/json:
+              example:
+                id: "8d2f5b4a-3b6a-4c62-bcd7-2a2b16b1b7ff"
+                username: "myduyen"
+                email: "duyen@example.com"
+                phone: "0901234567"
+                avatar: "https://example.com/avatar.jpg"
+        401:
+          description: Unauthorized.
+          content:
+            application/json:
+              example:
+                error: "Missing or invalid token"
+
+    put:
+      tags:
+        - Users
+      summary: Update current user profile
+      description: Update username, email, phone, or avatar for the current user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: myduyen_new
+                email:
+                  type: string
+                  example: duyen_new@example.com
+                phone:
+                  type: string
+                  example: 0912345678
+                avatar:
+                  type: string
+                  example: https://example.com/new_avatar.png
+      responses:
+        200:
+          description: Profile updated successfully.
+          content:
+            application/json:
+              example:
+                message: "Profile updated successfully"
+        401:
+          description: Unauthorized.
+          content:
+            application/json:
+              example:
+                error: "Missing or invalid token"
+
+    delete:
+      tags:
+        - Users
+      summary: Delete current user account
+      description: Permanently delete the authenticated user's account.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Account deleted successfully.
+          content:
+            application/json:
+              example:
+                message: "Account deleted successfully"
+        401:
+          description: Unauthorized.
+          content:
+            application/json:
+              example:
+                error: "Missing or invalid token"

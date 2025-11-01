@@ -57,8 +57,8 @@ Thumbs.db
 # 🚀 Others
 # -------------------------------
 # Local data and seed files
-data.json
-seed_data.py
+# data.json
+# seed_data.py
 
 # Log files
 *.log

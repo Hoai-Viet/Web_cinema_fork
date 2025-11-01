@@ -1,0 +1,35 @@
+tags:
+  - Authentication
+summary: User registration
+description: API for user to register a new account
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+          example: john123
+        email:
+          type: string
+          example: john@example.com
+        password:
+          type: string
+          example: password123
+      required:
+        - username
+        - email
+        - password
+
+responses:
+  201:
+    description: User created successfully
+  400:
+    description: Validation error

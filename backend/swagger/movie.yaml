@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: "Movie API"
+  version: 1.0.0
+  description: ""
+
+tags:
+  - name: "API Movie"
+    description: ""
+
+paths:
+  /movies:
+    get:
+      tags:
+        - "Movie"
+      summary: "Lấy danh sách tất cả phim"
+      description: "Trả về danh sách các phim hiện có (chỉ user đã đăng nhập mới xem được)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Danh sách phim trả về thành công"
+          content:
+            application/json:
+              example:
+                - id: "m1"
+                  title: "Avengers: Endgame"
+                  genre: "Hành động"
+                  country: "Mỹ"
+                  duration: 181
+                  release_date: "2019-04-26"
+                  description: "Trận chiến cuối cùng chống lại Thanos."
+                  image_url: "https://example.com/avengers.jpg"
+
+    post:
+      tags:
+        - "Movie"
+      summary: "Tạo mới phim"
+      description: "Tạo một phim mới trong hệ thống (yêu cầu đăng nhập và có quyền phù hợp)."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: "Inception"
+              genre: "Khoa học viễn tưởng"
+              country: "Mỹ"
+              duration: 148
+              release_date: "2010-07-16"
+              description: "Bộ phim xoay quanh giấc mơ và tiềm thức."
+              image_url: "https://example.com/inception.jpg"
+      responses:
+        "201":
+          description: "Tạo phim mới thành công"
+          content:
+            application/json:
+              example:
+                message: "Movie created successfully"
+        "400":
+          description: "Thiếu hoặc sai định dạng dữ liệu đầu vào"
+
+  /movies/{movie_id}:
+    get:
+      tags:
+        - "Movie"
+      summary: "Lấy chi tiết phim theo ID"
+      description: "Trả về thông tin chi tiết của một phim dựa theo movie_id."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "movie_id"
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "ID của phim cần lấy thông tin"
+      responses:
+        "200":
+          description: "Thông tin phim trả về thành công"
+          content:
+            application/json:
+              example:
+                id: "m1"
+                title: "Interstellar"
+                genre: "Khoa học viễn tưởng"
+                country: "Mỹ"
+                duration: 169
+                release_date: "2014-11-07"
+                description: "Một nhóm phi hành gia du hành xuyên qua lỗ sâu để tìm hành tinh mới cho nhân loại."
+                image_url: "https://example.com/interstellar.jpg"
+        "404":
+          description: "Không tìm thấy phim"
+
+    put:
+      tags:
+        - "Movie"
+      summary: "Cập nhật thông tin phim"
+      description: "Cập nhật thông tin chi tiết của một phim (yêu cầu đăng nhập)."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "movie_id"
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              title: "Inception (Updated)"
+              genre: "Khoa học viễn tưởng, hành động"
+              country: "Mỹ"
+              duration: 150
+              release_date: "2010-07-16"
+              description: "Bộ phim được cập nhật mô tả mới."
+              image_url: "https://example.com/inception2.jpg"
+      responses:
+        "200":
+          description: "Cập nhật thành công"
+          content:
+            application/json:
+              example:
+                message: "Movie updated successfully"
+        "400":
+          description: "Dữ liệu không hợp lệ"
+        "404":
+          description: "Không tìm thấy phim"
+
+    delete:
+      tags:
+        - "Movie"
+      summary: "Xóa phim"
+      description: "Xóa phim theo ID (yêu cầu đăng nhập và quyền admin)."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "movie_id"
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Xóa phim thành công"
+          content:
+            application/json:
+              example:
+                message: "Movie deleted successfully"
+        "404":
+          description: "Không tìm thấy phim"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
