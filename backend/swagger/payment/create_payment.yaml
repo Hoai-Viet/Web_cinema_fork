@@ -1,0 +1,43 @@
+tags:
+  - Payment
+summary: Tạo thanh toán cho vé
+description: User thực hiện thanh toán cho vé đã đặt
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - ticket_id
+          - amount
+        properties:
+          ticket_id:
+            type: string
+            example: "7e1c12b9-33d2-4b9d-a3d1-11f25a8c8df2"
+          amount:
+            type: number
+            example: 120000
+          payment_method:
+            type: string
+            enum: [Cash, Credit Card, Momo, ZaloPay, VNPay]
+            example: Momo
+responses:
+  201:
+    description: Payment created successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            payment_id:
+              type: string
+            status:
+              type: string
+              example: Pending
+  400:
+    description: Missing ticket_id or amount
+  404:
+    description: Ticket not found

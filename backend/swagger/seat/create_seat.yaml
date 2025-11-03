@@ -1,0 +1,51 @@
+tags:
+  - Seats
+summary: Create New Seat
+description: Add a new seat to the system by providing room ID, seat number, and seat type.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        room_id:
+          type: integer
+          example: 1
+        seat_number:
+          type: string
+          example: A7
+        seat_type:
+          type: string
+          example: VIP
+      required:
+        - room_id
+        - seat_number
+        - seat_type
+
+responses:
+  201:
+    description: Seat created successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat created successfully
+        seat_id:
+          type: integer
+          example: 8
+
+  400:
+    description: Missing required fields
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Missing required fields

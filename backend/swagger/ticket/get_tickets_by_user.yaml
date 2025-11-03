@@ -1,0 +1,54 @@
+tags:
+  - Tickets
+summary: Get Tickets by User
+description: Retrieve all tickets booked by a specific user.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: user_id
+    required: true
+    type: integer
+    description: ID of the user to fetch tickets for
+    example: 3
+
+responses:
+  200:
+    description: Successfully retrieved tickets for user
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 15
+          movie:
+            type: string
+            example: "Avengers: Endgame"
+          seat_number:
+            type: string
+            example: D12
+          room:
+            type: string
+            example: Room 2
+          start_time:
+            type: string
+            example: "2025-11-03T19:00:00"
+          price:
+            type: number
+            example: 100000
+          booked_at:
+            type: string
+            example: "2025-11-02T16:00:00"
+  404:
+    description: No tickets found for this user
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: No tickets found for this user

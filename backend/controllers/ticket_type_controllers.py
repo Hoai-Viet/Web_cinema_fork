@@ -1,8 +1,9 @@
 from flask import jsonify, request
-from models import db, TicketType
+from models import db, TicketType, Showtime
 import uuid
+from sqlalchemy.orm import joinedload
 
-# 1️⃣ Lấy tất cả loại vé
+#   Lấy tất cả loại vé
 def get_all_ticket_types():
     ticket_types = TicketType.query.all()
     result = [
@@ -18,7 +19,7 @@ def get_all_ticket_types():
     return jsonify(result), 200
 
 
-# 2️⃣ Lấy loại vé theo ID
+#   Lấy loại vé theo ID
 def get_ticket_type(ticket_type_id):
     ticket_type = TicketType.query.get(ticket_type_id)
     if not ticket_type:
@@ -33,7 +34,7 @@ def get_ticket_type(ticket_type_id):
     }), 200
 
 
-# 3️⃣ Tạo loại vé mới
+#    Tạo loại vé mới
 def create_ticket_type():
     data = request.get_json()
     new_ticket_type = TicketType(
@@ -48,7 +49,7 @@ def create_ticket_type():
     return jsonify({"message": "Ticket type created successfully"}), 201
 
 
-# 4️⃣ Cập nhật loại vé
+#    Cập nhật loại vé
 def update_ticket_type(ticket_type_id):
     data = request.get_json()
     ticket_type = TicketType.query.get(ticket_type_id)
@@ -64,7 +65,7 @@ def update_ticket_type(ticket_type_id):
     return jsonify({"message": "Ticket type updated successfully"}), 200
 
 
-# 5️⃣ Xóa loại vé
+#    Xóa loại vé
 def delete_ticket_type(ticket_type_id):
     ticket_type = TicketType.query.get(ticket_type_id)
     if not ticket_type:

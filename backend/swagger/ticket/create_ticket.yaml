@@ -1,0 +1,64 @@
+tags:
+  - Tickets
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 5
+        showtime_id:
+          type: integer
+          example: 2
+        seat_id:
+          type: integer
+          example: 14
+        price:
+          type: number
+          example: 95000
+      required:
+        - user_id
+        - showtime_id
+        - seat_id
+        - price
+
+responses:
+  201:
+    description: Ticket booked successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket booked successfully
+        ticket_id:
+          type: integer
+          example: 25
+
+  400:
+    description: Missing or invalid fields / seat already booked
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat already booked for this showtime
+
+  404:
+    description: User, Seat, or Showtime not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User not found

@@ -1,0 +1,27 @@
+tags:
+  - Ticket Combos
+summary: Get all combos in a ticket
+parameters:
+  - in: path
+    name: ticket_id
+    required: true
+    schema:
+      type: string
+responses:
+  200:
+    description: Danh sách combo trong vé
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              name: { type: string }
+              description: { type: string }
+              price: { type: number }
+              image_url: { type: string }
+              quantity: { type: integer }
+  404:
+    description: Ticket not found

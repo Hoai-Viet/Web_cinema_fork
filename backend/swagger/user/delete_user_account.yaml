@@ -1,0 +1,35 @@
+tags:
+  - Users
+summary: Delete User Account
+description: Permanently delete a user account by ID.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: user_id
+    required: true
+    type: integer
+    description: ID of the user to delete
+    example: 5
+
+responses:
+  200:
+    description: Account deleted successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Account deleted successfully
+
+  404:
+    description: User not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: User not found

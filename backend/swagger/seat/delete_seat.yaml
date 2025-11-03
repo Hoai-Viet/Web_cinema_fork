@@ -1,0 +1,35 @@
+tags:
+  - Seats
+summary: Delete Seat
+description: Delete a seat from the system by its ID.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: seat_id
+    required: true
+    type: integer
+    description: ID of the seat to delete
+    example: 6
+
+responses:
+  200:
+    description: Seat deleted successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat deleted successfully
+
+  404:
+    description: Seat not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat not found

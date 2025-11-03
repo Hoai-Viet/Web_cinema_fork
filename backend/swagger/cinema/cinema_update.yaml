@@ -1,0 +1,50 @@
+tags:
+  - Cinema
+summary: Update cinema
+description: Update cinema details by ID
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: cinema_id
+    required: true
+    type: string
+    example: "3"
+
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: BHD Star Vincom Thủ Đức
+        address:
+          type: string
+          example: 216 Võ Văn Ngân, Thủ Đức, TP.HCM
+        phone:
+          type: string
+          example: "02877889966"
+
+responses:
+  200:
+    description: Update success
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Cinema updated successfully
+
+  404:
+    description: Cinema not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Cinema not found

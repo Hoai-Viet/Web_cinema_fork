@@ -1,0 +1,33 @@
+tags:
+  - Tickets
+summary: Delete Ticket
+description: Cancel (delete) a booked ticket by its ticket ID.
+produces:
+  - application/json
+
+parameters:
+  - name: ticket_id
+    in: path
+    type: integer
+    required: true
+    description: ID of the ticket to delete
+    example: 25
+
+responses:
+  200:
+    description: Ticket cancelled successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket cancelled successfully
+
+  404:
+    description: Ticket not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket not found

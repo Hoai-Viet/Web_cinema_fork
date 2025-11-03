@@ -1,0 +1,33 @@
+tags:
+  - Movies
+summary: Lấy danh sách phim
+description: |
+  Lấy danh sách phim. Hỗ trợ lọc theo thể loại, quốc gia, trạng thái.
+parameters:
+  - name: genre
+    in: query
+    required: false
+    schema:
+      type: string
+    description: Lọc theo thể loại
+  - name: country
+    in: query
+    required: false
+    schema:
+      type: string
+    description: Lọc theo quốc gia
+  - name: status
+    in: query
+    required: false
+    schema:
+      type: string
+    description: Lọc theo trạng thái (Now Showing / Coming Soon)
+responses:
+  200:
+    description: Danh sách phim
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: "#/components/schemas/Movie"

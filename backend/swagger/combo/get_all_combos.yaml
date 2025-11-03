@@ -1,0 +1,21 @@
+tags:
+  - Snack Combos
+summary: Get all snack combos
+description: Trả về danh sách tất cả các combo bắp nước/snack
+responses:
+  200:
+    description: Danh sách combo
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              name: { type: string }
+              description: { type: string }
+              price: { type: number }
+              image_url: { type: string }
+  500:
+    description: Server error

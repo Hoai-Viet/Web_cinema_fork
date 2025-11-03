@@ -1,0 +1,43 @@
+tags:
+  - Room
+summary: Create a new room
+description: Add a new room to a cinema
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - cinema_id
+        - name
+        - total_seats
+      properties:
+        cinema_id:
+          type: string
+          example: "abc-123-cinema"
+        name:
+          type: string
+          example: Room A
+        total_seats:
+          type: integer
+          example: 120
+
+responses:
+  201:
+    description: Room created
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Room created successfully
+        room_id:
+          type: string
+  400:
+    description: Missing fields

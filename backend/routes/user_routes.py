@@ -14,7 +14,7 @@ user_routes = Blueprint("user_routes", __name__)
 # ---------------------------
 @user_routes.route("/me", methods=["GET"])
 @jwt_required()
-@swag_from("../swagger/user.yaml", methods=["get"])
+@swag_from("../swagger/user/get_user_profile.yaml", methods=["get"])
 def get_profile():
     user_id = get_jwt_identity()
     return get_user_profile(user_id)
@@ -24,7 +24,7 @@ def get_profile():
 # ---------------------------
 @user_routes.route("/me", methods=["PUT"])
 @jwt_required()
-@swag_from("../swagger/user.yaml", methods=["put"])
+@swag_from("../swagger/user/update_user_profile.yaml", methods=["put"])
 def update_profile():
     user_id = get_jwt_identity()
     data = request.get_json()
@@ -35,7 +35,7 @@ def update_profile():
 # ---------------------------
 @user_routes.route("/me", methods=["DELETE"])
 @jwt_required()
-@swag_from("../swagger/user.yaml", methods=["delete"])
+@swag_from("../swagger/user/delete_user_account.yaml", methods=["delete"])
 def delete_account():
     user_id = get_jwt_identity()
     return delete_user_account(user_id)

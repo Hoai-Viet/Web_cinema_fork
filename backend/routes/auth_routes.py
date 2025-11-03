@@ -13,32 +13,32 @@ import os
 auth_routes = Blueprint("auth_routes", __name__)
 
 @auth_routes.route("/signup", methods=["POST"])
-@swag_from("../swagger/auth_sign_up.yaml")
+@swag_from("../swagger/auth/auth_signup.yaml")
 def signup():
     data = request.get_json()
     return signup_user(data)
 
 @auth_routes.route("/login", methods=["POST"])
-# @swag_from("../swagger/auth_login.yaml")
+@swag_from("../swagger/auth/auth_login.yaml")
 def login():
     data = request.get_json()
     return login_user(data)
 
 @auth_routes.route("/forgot-password", methods=["POST"])
-# @swag_from("../swagger/auth_forgot_password.yaml")
+@swag_from("../swagger/auth/auth_forgot_password.yaml")
 def forgot():
     data = request.get_json()
     return forgot_password(data)
 
 @auth_routes.route("/logout", methods=["POST"])
 @jwt_required()
-# @swag_from("../swagger/auth_logout.yaml")
+@swag_from("../swagger/auth/auth_logout.yaml")
 def logout():
     return logout_user()
 
 @auth_routes.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
-# @swag_from("../swagger/auth_refresh.yaml")
+@swag_from("../swagger/auth/auth_refresh.yaml")
 def refresh():
     return refresh_token()
 

@@ -1,0 +1,59 @@
+tags:
+  - Tickets
+summary: Update Ticket
+description: Update seat, showtime, or price of an existing ticket.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: ticket_id
+    required: true
+    type: integer
+    description: ID of the ticket to update
+    example: 9
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        seat_id:
+          type: integer
+          example: 18
+        showtime_id:
+          type: integer
+          example: 5
+        price:
+          type: number
+          example: 120000
+
+responses:
+  200:
+    description: Ticket updated successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket updated successfully
+
+  400:
+    description: Seat already booked or invalid
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat already booked
+
+  404:
+    description: Ticket or Showtime not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket not found

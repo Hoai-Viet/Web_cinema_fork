@@ -1,0 +1,20 @@
+tags:
+  - Movies
+summary: Cập nhật phim
+parameters:
+  - name: movie_id
+    in: path
+    required: true
+    schema:
+      type: string
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/MovieUpdateRequest"
+responses:
+  200:
+    description: Cập nhật thành công
+  404:
+    description: Không tìm thấy phim

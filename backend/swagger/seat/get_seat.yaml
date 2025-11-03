@@ -1,0 +1,43 @@
+tags:
+  - Seats
+summary: Get Seat by ID
+description: Retrieve detailed information of a seat by its ID.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: seat_id
+    required: true
+    type: integer
+    description: ID of the seat to retrieve
+    example: 3
+
+responses:
+  200:
+    description: Seat found successfully
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        room_id:
+          type: integer
+          example: 1
+        seat_number:
+          type: string
+          example: B10
+        seat_type:
+          type: string
+          example: Standard
+  404:
+    description: Seat not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Seat not found

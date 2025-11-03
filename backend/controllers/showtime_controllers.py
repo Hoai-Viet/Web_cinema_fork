@@ -1,5 +1,6 @@
 from flask import jsonify, request
 from models import db, Showtime, Movie, Room, Ticket, Seat
+from sqlalchemy.orm import joinedload
 
 # -------------------------------
 # Lấy danh sách tất cả suất chiếu
@@ -120,3 +121,39 @@ def get_available_seats(showtime_id):
         })
 
     return jsonify(available_seats)
+
+def get_showtimes_by_movie(movie_id):
+    showtimes = Showtime.query.filter_by(movie_id=movie_id).all()
+    result = []
+
+    for s in showtimes:
+        result.append({
+            "id": s.id,
+            "date": s.date.strftime("%Y-%m-%d") if s.date else None,
+            "time": s.time.strftime("%H:%M") if s.time else None,
+            "cinema": s.cinema.name if hasattr(s, "cinema") else None,
+            "room": s.room.name if hasattr(s, "room") else None
+        })
+
+    return jsonify(result), 200
+
+def get_cinema_by_showtime(showtime_id):
+    """
+    Lấy thông tin cinema thông qua showtime_id (liên kết qua room).
+    """
+    showtime = (
+        Showtime.query.options(joinedload(Showtime.room).joinedload("cinema"))
+        .filter_by(id=showtime_id)
+        .first()
+    )
+
+    if not showtime or not showtime.room or not showtime.room.cinema:
+        return {"error": "Cinema not found"}, 404
+
+    cinema = showtime.room.cinema
+    return {
+        "id": cinema.id,
+        "name": cinema.name,
+        "address": cinema.address,
+        "phone": cinema.phone,
+    }, 200

@@ -1,0 +1,18 @@
+tags:
+  - Movies
+summary: Lấy chi tiết phim theo ID
+parameters:
+  - name: movie_id
+    in: path
+    required: true
+    schema:
+      type: string
+responses:
+  200:
+    description: Thông tin phim
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/Movie"
+  404:
+    description: Không tìm thấy phim

@@ -1,0 +1,69 @@
+tags:
+  - Tickets
+summary: Get Ticket Details
+description: Retrieve full ticket details including movie, seat, room, combos, and payment info.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: ticket_id
+    required: true
+    type: integer
+    description: ID of the ticket to get detailed info
+    example: 15
+
+responses:
+  200:
+    description: Ticket details retrieved successfully
+    schema:
+      type: object
+      properties:
+        ticket_id:
+          type: integer
+          example: 15
+        movie:
+          type: string
+          example: Interstellar
+        room:
+          type: string
+          example: Room 5
+        seat_number:
+          type: string
+          example: B8
+        showtime:
+          type: string
+          example: "2025-11-03T21:00:00"
+        price:
+          type: number
+          example: 110000
+        booked_at:
+          type: string
+          example: "2025-11-02T20:00:00"
+        combos:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer, example: 2 }
+              name: { type: string, example: Combo Bắp + Pepsi }
+              price: { type: number, example: 45000 }
+        payment_info:
+          type: array
+          items:
+            type: object
+            properties:
+              amount: { type: number, example: 155000 }
+              method: { type: string, example: Momo }
+              status: { type: string, example: Completed }
+              created_at: { type: string, example: "2025-11-02T20:05:00" }
+  404:
+    description: Ticket not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket not found

@@ -1,0 +1,42 @@
+tags:
+  - Ticket Types
+summary: Create a new ticket type
+description: Add a new ticket type to database
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+        - base_price
+        - room_type
+      properties:
+        name:
+          type: string
+          example: "Deluxe"
+        description:
+          type: string
+          example: "Deluxe seat with extra leg room"
+        base_price:
+          type: number
+          example: 90000
+        room_type:
+          type: string
+          example: "3D"
+
+responses:
+  201:
+    description: Ticket type created
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket type created successfully

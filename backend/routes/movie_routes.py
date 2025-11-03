@@ -13,35 +13,35 @@ movie_routes = Blueprint("movie_routes", __name__)
 
 # 🟢 Lấy danh sách tất cả phim
 @movie_routes.route("/movies", methods=["GET"])
-@jwt_required()
-@swag_from("../swagger/movie.yaml", methods=["GET"])
+# @jwt_required()
+@swag_from("../swagger/movie/get_movies.yaml", methods=["GET"])
 def get_all_movies():
     return get_movies()
 
 # 🟢 Tạo mới phim
 @movie_routes.route("/movies", methods=["POST"])
 @jwt_required()
-@swag_from("../swagger/movie.yaml", methods=["POST"])
+@swag_from("../swagger/movie/create_movie.yaml", methods=["POST"])
 def create_new_movie():
     return create_movie()
 
 # 🟢 Lấy chi tiết phim theo ID
 @movie_routes.route("/movies/<string:movie_id>", methods=["GET"])
 @jwt_required()
-@swag_from("../swagger/movie.yaml", methods=["GET"])
+@swag_from("../swagger/movie/get_movie.yaml", methods=["GET"])
 def get_movie_detail(movie_id):
     return get_movie(movie_id)
 
 # 🟢 Cập nhật phim
 @movie_routes.route("/movies/<string:movie_id>", methods=["PUT"])
 @jwt_required()
-@swag_from("../swagger/movie.yaml", methods=["PUT"])
+@swag_from("../swagger/movie/update_movie.yaml", methods=["PUT"])
 def update_movie_info(movie_id):
     return update_movie(movie_id)
 
 # 🟢 Xóa phim
 @movie_routes.route("/movies/<string:movie_id>", methods=["DELETE"])
 @jwt_required()
-@swag_from("../swagger/movie.yaml", methods=["DELETE"])
+@swag_from("../swagger/movie/delete_movie.yaml", methods=["DELETE"])
 def delete_movie_info(movie_id):
     return delete_movie(movie_id)

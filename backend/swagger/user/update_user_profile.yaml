@@ -1,0 +1,53 @@
+tags:
+  - Users
+summary: Update User Profile
+description: Update an existing user's profile information by providing one or more fields.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: user_id
+    required: true
+    type: integer
+    description: ID of the user to update
+    example: 5
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johndoe123
+        email:
+          type: string
+          example: johndoe123@example.com
+        phone:
+          type: string
+          example: "0987654321"
+        avatar:
+          type: string
+          example: "https://example.com/new_avatar.png"
+
+responses:
+  200:
+    description: Profile updated successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Profile updated successfully
+
+  404:
+    description: User not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: User not found

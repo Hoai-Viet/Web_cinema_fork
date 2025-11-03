@@ -1,0 +1,19 @@
+tags:
+  - Authentication
+summary: Refresh Access Token
+description: Refresh access token using a refresh token
+produces:
+  - application/json
+
+security:
+  - Bearer: []
+
+responses:
+  200:
+    description: Access token refreshed
+    schema:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: <NEW_JWT_ACCESS_TOKEN>

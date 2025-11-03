@@ -1,0 +1,37 @@
+tags:
+  - Tickets
+summary: Get All Tickets
+description: Retrieve a list of all booked tickets.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters: []
+
+responses:
+  200:
+    description: Successfully retrieved all tickets
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          user_id:
+            type: integer
+            example: 5
+          showtime_id:
+            type: integer
+            example: 2
+          seat_id:
+            type: integer
+            example: 10
+          price:
+            type: number
+            example: 95000
+          booked_at:
+            type: string
+            example: "2025-11-02T19:30:00"

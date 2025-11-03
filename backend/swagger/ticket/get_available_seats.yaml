@@ -1,0 +1,37 @@
+tags:
+  - Tickets
+summary: Get Available Seats
+description: Retrieve a list of available seats for a given showtime.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: showtime_id
+    required: true
+    type: integer
+    description: Showtime ID to check available seats
+    example: 4
+
+responses:
+  200:
+    description: Successfully retrieved available seats
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 10
+          seat_number:
+            type: string
+            example: A5
+          seat_type:
+            type: string
+            example: Standard
+          room_type:
+            type: string
+            example: IMAX

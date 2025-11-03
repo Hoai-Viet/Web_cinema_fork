@@ -15,26 +15,35 @@ seat_routes = Blueprint("seat_routes", __name__)
 # ---------------------------
 
 @seat_routes.route("/seats", methods=["GET"])
-@swag_from("../swagger/seat.yaml", endpoint="get_seats", methods=["GET"])
+@swag_from("../swagger/seat/get_seats.yaml")
 def route_get_seats():
+    """Get all seats"""
     return get_seats()
 
-@seat_routes.route("/seats/<seat_id>", methods=["GET"])
-@swag_from("../swagger/seat.yaml", endpoint="get_seat", methods=["GET"])
+
+@seat_routes.route("/seats/<int:seat_id>", methods=["GET"])
+@swag_from("../swagger/seat/get_seat.yaml")
 def route_get_seat(seat_id):
+    """Get seat by ID"""
     return get_seat(seat_id)
 
+
 @seat_routes.route("/seats", methods=["POST"])
-@swag_from("../swagger/seat.yaml", endpoint="create_seat", methods=["POST"])
+@swag_from("../swagger/seat/create_seat.yaml")
 def route_create_seat():
+    """Create a new seat"""
     return create_seat()
 
-@seat_routes.route("/seats/<seat_id>", methods=["PUT"])
-@swag_from("../swagger/seat.yaml", endpoint="update_seat", methods=["PUT"])
+
+@seat_routes.route("/seats/<int:seat_id>", methods=["PUT"])
+@swag_from("../swagger/seat/update_seat.yaml")
 def route_update_seat(seat_id):
+    """Update an existing seat"""
     return update_seat(seat_id)
 
-@seat_routes.route("/seats/<seat_id>", methods=["DELETE"])
-@swag_from("../swagger/seat.yaml", endpoint="delete_seat", methods=["DELETE"])
+
+@seat_routes.route("/seats/<int:seat_id>", methods=["DELETE"])
+@swag_from("../swagger/seat/delete_seat.yaml")
 def route_delete_seat(seat_id):
+    """Delete a seat"""
     return delete_seat(seat_id)
