@@ -47,3 +47,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .slick-slide > div {
   margin: 0 10px;
 }
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
+}

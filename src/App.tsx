@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import AuthForm from "./components/AuthForm";
 import Forgotpassword from "./components/Forgotpassword";
 import Home from "./apps/home";
+import MovieDetail from "./apps/movie_detail";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<AuthForm />} />
           <Route path="/forgotpassword" element={<Forgotpassword />} />
+          <Route path="/movie/:id" element={<MovieDetail />} />
         </Routes>
       </div>
 
