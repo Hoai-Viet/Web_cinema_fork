@@ -72,7 +72,9 @@ export default function MovieTheater({
                     : "border-yellow-300 text-yellow-300 hover:bg-yellow-300 hover:text-[#4E56C0]"
                 }`}
             >
-              {selectedCinemaId === cinema.id ? "✓ Chosen" : "Click here to choose"}
+              {selectedCinemaId === cinema.id
+                ? "✓ Chosen"
+                : "Click here to choose"}
             </button>
           </div>
         </div>
