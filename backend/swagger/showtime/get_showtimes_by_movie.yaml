@@ -1,0 +1,45 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+get:
+  tags:
+    - Showtime
+  summary: Get showtimes by movie ID
+  parameters:
+    - name: movie_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 2
+  responses:
+    200:
+      description: List of showtimes for a movie
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                date:
+                  type: string
+                  example: "2025-11-03"
+                time:
+                  type: string
+                  example: "19:00"
+                cinema:
+                  type: string
+                  example: CGV Aeon Mall Bình Tân
+                room:
+                  type: string
+                  example: Room 5

@@ -1,0 +1,33 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+delete:
+  tags:
+    - Showtime
+  summary: Delete a showtime
+  parameters:
+    - name: showtime_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 3
+  responses:
+    200:
+      description: Showtime deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Showtime deleted successfully
+    404:
+      description: Showtime not found

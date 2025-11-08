@@ -1,5 +1,5 @@
 from flask import jsonify
-from models import db, Ticket, User, Seat, Showtime, Payment
+from models import db, Ticket, User, Seat, Showtime, Payment,TicketType
 
 # ✅ Lấy tất cả vé
 def get_all_tickets():
@@ -180,3 +180,27 @@ def get_ticket_details(ticket_id):
         "combos": combos,
         "payment_info": payment_info
     })
+
+def get_ticket_types_by_showtime(showtime_id):
+    showtime = Showtime.query.get(showtime_id)
+    if not showtime:
+        return jsonify({"message": "Showtime not found"}), 404
+
+    room = showtime.room
+    if not room:
+        return jsonify({"message": "Room not found"}), 404
+
+    # Lấy loại vé phù hợp với loại phòng (Standard / Deluxe ...)
+    ticket_types = TicketType.query.filter_by(room_type=room.room_type).all()
+
+    result = []
+    for t in ticket_types:
+        result.append({
+            "id": t.id,
+            "name": t.name,
+            "description": t.description,
+            "base_price": t.base_price,
+            "room_type": t.room_type
+        })
+
+    return jsonify(result), 200

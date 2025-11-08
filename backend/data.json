@@ -47,6 +47,20 @@
     }
   ],
 
+  "seats": [
+    { "room": "Phòng 1", "seat_number": "A1", "seat_type": "Standard" },
+    { "room": "Phòng 1", "seat_number": "A2", "seat_type": "Standard" },
+    { "room": "Phòng 1", "seat_number": "B1", "seat_type": "VIP" },
+    { "room": "Phòng 1", "seat_number": "B2", "seat_type": "VIP" },
+
+    { "room": "Phòng 2 IMAX", "seat_number": "A1", "seat_type": "Standard" },
+    { "room": "Phòng 2 IMAX", "seat_number": "A2", "seat_type": "Standard" },
+    { "room": "Phòng 2 IMAX", "seat_number": "B1", "seat_type": "Sweetbox" },
+
+    { "room": "Phòng VIP", "seat_number": "A1", "seat_type": "VIP" },
+    { "room": "Phòng VIP", "seat_number": "A2", "seat_type": "VIP" }
+  ],
+
   "movies": [
     {
       "title": "Avengers: Endgame",
@@ -74,6 +88,48 @@
     }
   ],
 
+  "showtimes": [
+    {
+      "movie": "Avengers: Endgame",
+      "room": "Phòng 1",
+      "start_time": "2025-11-10T18:30:00",
+      "end_time": "2025-11-10T21:30:00"
+    },
+    {
+      "movie": "Avengers: Endgame",
+      "room": "Phòng 2 IMAX",
+      "start_time": "2025-11-11T20:00:00",
+      "end_time": "2025-11-11T23:00:00"
+    },
+    {
+      "movie": "Your Name",
+      "room": "Phòng VIP",
+      "start_time": "2025-11-15T14:00:00",
+      "end_time": "2025-11-15T15:45:00"
+    }
+  ],
+
+  "ticket_types": [
+    {
+      "name": "Vé Standard 2D",
+      "description": "Vé thường cho phòng chiếu 2D",
+      "base_price": 90000,
+      "room_type": "Standard"
+    },
+    {
+      "name": "Vé Deluxe IMAX",
+      "description": "Ghế IMAX chất lượng cao",
+      "base_price": 150000,
+      "room_type": "Deluxe"
+    },
+    {
+      "name": "Vé VIP 3D",
+      "description": "Ghế VIP cho phòng chiếu 3D",
+      "base_price": 200000,
+      "room_type": "Deluxe"
+    }
+  ],
+
   "snack_combos": [
     {
       "name": "Combo 1: Popcorn + Nước Ngọt",
@@ -92,6 +148,40 @@
       "description": "1 Bắp caramel + 1 Hotdog + 1 Nước ngọt lớn + 1 Khoai tây chiên",
       "price": 249000,
       "image_url": "https://via.placeholder.com/300x200?text=VIP"
+    }
+  ],
+
+  "tickets": [
+    {
+      "user": "demo_user",
+      "showtime": "Avengers: Endgame - Phòng 1 - 18:30",
+      "seat": "A1",
+      "ticket_type": "Vé Standard 2D",
+      "price": 90000,
+      "snack_combos": ["Combo 1: Popcorn + Nước Ngọt"]
+    },
+    {
+      "user": "demo_user",
+      "showtime": "Avengers: Endgame - Phòng 2 IMAX - 20:00",
+      "seat": "B1",
+      "ticket_type": "Vé Deluxe IMAX",
+      "price": 150000,
+      "snack_combos": ["Combo VIP"]
+    }
+  ],
+
+  "payments": [
+    {
+      "ticket": "Avengers: Endgame - Phòng 1 - 18:30 - A1",
+      "amount": 209000,
+      "payment_method": "Momo",
+      "status": "Completed"
+    },
+    {
+      "ticket": "Avengers: Endgame - Phòng 2 IMAX - 20:00 - B1",
+      "amount": 399000,
+      "payment_method": "Credit Card",
+      "status": "Completed"
     }
   ]
 }

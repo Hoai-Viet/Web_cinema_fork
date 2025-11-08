@@ -9,7 +9,8 @@ from controllers.tickets_controllers import (
     update_ticket,
     delete_ticket,
     get_available_seats,
-    get_ticket_details
+    get_ticket_details,
+    get_ticket_types_by_showtime
 )
 
 ticket_routes = Blueprint("ticket_routes", __name__)
@@ -86,3 +87,9 @@ def available_seats(showtime_id):
 def ticket_details(ticket_id):
     """Get detailed information of a ticket"""
     return get_ticket_details(ticket_id)
+
+# ✅ Get ticket types by showtime ID
+@ticket_routes.route("/showtime/<string:showtime_id>/ticket-types", methods=["GET"])
+@jwt_required()
+def route_get_ticket_types_by_showtime(showtime_id):
+    return get_ticket_types_by_showtime(showtime_id)

@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from models import db, Movie
 
-# 🟢 Lấy danh sách phim (có hỗ trợ lọc theo thể loại, quốc gia, trạng thái)
+# Lấy danh sách phim (có hỗ trợ lọc theo thể loại, quốc gia, trạng thái)
 def get_movies():
     genre = request.args.get("genre")
     country = request.args.get("country")
@@ -34,7 +34,7 @@ def get_movies():
     return jsonify(result), 200
 
 
-# 🟢 Lấy chi tiết phim theo ID
+# Lấy chi tiết phim theo ID
 def get_movie(movie_id):
     movie = Movie.query.get(movie_id)
     if not movie:

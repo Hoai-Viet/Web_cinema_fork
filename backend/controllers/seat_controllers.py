@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db, Seat
+from models import db, Seat, Ticket
 
 # ---------------------------
 # Lấy danh sách ghế
@@ -77,3 +77,69 @@ def delete_seat(seat_id):
     db.session.delete(seat)
     db.session.commit()
     return jsonify({"message": "Seat deleted successfully"})
+
+def get_seats_by_room(room_id):
+    seats = Seat.query.filter_by(room_id=room_id).all()
+    result = [{
+        "id": s.id,
+        "seat_number": s.seat_number,
+        "seat_type": s.seat_type
+    } for s in seats]
+
+    return jsonify(result)
+
+def get_seats_status(showtime_id):
+    booked_seats = db.session.query(Seat.id).join(Ticket).filter(
+        Ticket.showtime_id == showtime_id
+    ).all()
+    booked_ids = [s.id for s in booked_seats]
+
+    seats = Seat.query.all()
+    result = [{
+        "id": s.id,
+        "seat_number": s.seat_number,
+        "seat_type": s.seat_type,
+        "is_booked": s.id in booked_ids
+    } for s in seats]
+
+    return jsonify(result)
+
+
+def book_multiple_seats():
+    data = request.get_json()
+
+    seat_ids = data.get("seat_ids")
+    showtime_id = data.get("showtime_id")
+    user_id = data.get("user_id")  # nếu có thông tin user
+
+    if not seat_ids or not showtime_id:
+        return jsonify({"message": "Missing seat_ids or showtime_id"}), 400
+
+    # Kiểm tra xem có ghế nào đã bị đặt chưa
+    existing_tickets = Ticket.query.filter(
+        Ticket.showtime_id == showtime_id,
+        Ticket.seat_id.in_(seat_ids)
+    ).all()
+
+    if existing_tickets:
+        booked_list = [t.seat_id for t in existing_tickets]
+        return jsonify({
+            "message": "Some seats are already booked",
+            "booked_seats": booked_list
+        }), 409
+
+    # Tạo vé mới cho từng ghế
+    for sid in seat_ids:
+        ticket = Ticket(
+            seat_id=sid,
+            showtime_id=showtime_id,
+            user_id=user_id,  # nếu bạn có cột user_id
+            booking_time=db.func.now()
+        )
+        db.session.add(ticket)
+
+    db.session.commit()
+    return jsonify({
+        "message": "Seats booked successfully",
+        "booked_seat_ids": seat_ids
+    }), 201

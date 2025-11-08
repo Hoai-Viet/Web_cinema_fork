@@ -27,7 +27,7 @@ def create_new_movie():
 
 # 🟢 Lấy chi tiết phim theo ID
 @movie_routes.route("/movies/<string:movie_id>", methods=["GET"])
-@jwt_required()
+# @jwt_required()
 @swag_from("../swagger/movie/get_movie.yaml", methods=["GET"])
 def get_movie_detail(movie_id):
     return get_movie(movie_id)

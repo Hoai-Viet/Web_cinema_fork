@@ -1,0 +1,51 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+post:
+  tags:
+    - Showtime
+  summary: Create a new showtime
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - movie_id
+            - room_id
+            - start_time
+          properties:
+            movie_id:
+              type: integer
+              example: 1
+            room_id:
+              type: integer
+              example: 3
+            start_time:
+              type: string
+              example: "2025-11-04T20:00:00"
+  responses:
+    201:
+      description: Showtime created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Showtime created successfully
+              id:
+                type: integer
+                example: 10
+    400:
+      description: Missing required fields
+    404:
+      description: Movie or room not found

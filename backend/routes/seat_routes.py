@@ -5,8 +5,12 @@ from controllers.seat_controllers import (
     get_seat,
     create_seat,
     update_seat,
-    delete_seat
+    delete_seat,
+    get_seats_by_room,
+    get_seats_status,
+    book_multiple_seats,
 )
+
 
 seat_routes = Blueprint("seat_routes", __name__)
 
@@ -47,3 +51,16 @@ def route_update_seat(seat_id):
 def route_delete_seat(seat_id):
     """Delete a seat"""
     return delete_seat(seat_id)
+
+@seat_routes.route("/room/<room_id>", methods=["GET"])
+def handle_get_seats_by_room(room_id):
+    return get_seats_by_room(room_id)
+
+@seat_routes.route("/status/<showtime_id>", methods=["GET"])
+def handle_get_seats_status(showtime_id):
+    return get_seats_status(showtime_id)
+
+
+@seat_routes.route("/book", methods=["POST"])
+def handle_book_multiple_seats():
+    return book_multiple_seats()

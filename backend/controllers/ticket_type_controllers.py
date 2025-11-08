@@ -1,7 +1,6 @@
 from flask import jsonify, request
-from models import db, TicketType, Showtime
+from models import db, TicketType
 import uuid
-from sqlalchemy.orm import joinedload
 
 #   Lấy tất cả loại vé
 def get_all_ticket_types():

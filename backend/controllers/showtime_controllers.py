@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db, Showtime, Movie, Room, Ticket, Seat
+from models import db, Showtime, Movie, Room, Ticket, Seat, Cinema
 from sqlalchemy.orm import joinedload
 
 # -------------------------------
@@ -129,31 +129,35 @@ def get_showtimes_by_movie(movie_id):
     for s in showtimes:
         result.append({
             "id": s.id,
-            "date": s.date.strftime("%Y-%m-%d") if s.date else None,
-            "time": s.time.strftime("%H:%M") if s.time else None,
-            "cinema": s.cinema.name if hasattr(s, "cinema") else None,
-            "room": s.room.name if hasattr(s, "room") else None
+            "movie_id": s.movie_id,
+            "room": s.room.name if s.room else None,
+            "start_time": s.start_time.strftime("%Y-%m-%d %H:%M") if s.start_time else None,
+            "end_time": s.end_time.strftime("%Y-%m-%d %H:%M") if s.end_time else None,
         })
 
     return jsonify(result), 200
 
+# -------------------------------
+# Lấy thông tin rạp theo showtime_id (thông qua room)
+# -------------------------------
 def get_cinema_by_showtime(showtime_id):
-    """
-    Lấy thông tin cinema thông qua showtime_id (liên kết qua room).
-    """
-    showtime = (
-        Showtime.query.options(joinedload(Showtime.room).joinedload("cinema"))
-        .filter_by(id=showtime_id)
-        .first()
-    )
 
-    if not showtime or not showtime.room or not showtime.room.cinema:
-        return {"error": "Cinema not found"}, 404
+    showtime = Showtime.query.get(showtime_id)
+    if not showtime:
+        return jsonify({"message": "Showtime not found"}), 404
 
-    cinema = showtime.room.cinema
-    return {
+    room = Room.query.get(showtime.room_id)
+    if not room:
+        return jsonify({"message": "Room not found"}), 404
+
+    cinema = Cinema.query.get(room.cinema_id)
+    if not cinema:
+        return jsonify({"message": "Cinema not found"}), 404
+
+    return jsonify({
         "id": cinema.id,
         "name": cinema.name,
         "address": cinema.address,
-        "phone": cinema.phone,
-    }, 200
+        "phone": cinema.phone
+    }), 200
+
