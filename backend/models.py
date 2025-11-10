@@ -140,6 +140,7 @@ class Ticket(db.Model):
     seat_id = db.Column(db.String(36), db.ForeignKey("seats.id"), nullable=False, index=True)
     ticket_type_id = db.Column(db.String(36), db.ForeignKey("ticket_types.id"), nullable=False, index=True)
     price = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
     booked_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     user = db.relationship("User", back_populates="tickets")

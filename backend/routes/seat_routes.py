@@ -9,6 +9,7 @@ from controllers.seat_controllers import (
     get_seats_by_room,
     get_seats_status,
     book_multiple_seats,
+    get_seats_by_cinema
 )
 
 
@@ -53,14 +54,23 @@ def route_delete_seat(seat_id):
     return delete_seat(seat_id)
 
 @seat_routes.route("/room/<room_id>", methods=["GET"])
+@swag_from("../swagger/seat/get_seats_by_room.yaml")
 def handle_get_seats_by_room(room_id):
     return get_seats_by_room(room_id)
 
 @seat_routes.route("/status/<showtime_id>", methods=["GET"])
+@swag_from("../swagger/seat/get_seats_by_status.yaml")
 def handle_get_seats_status(showtime_id):
     return get_seats_status(showtime_id)
 
 
 @seat_routes.route("/book", methods=["POST"])
+@swag_from("../swagger/seat/book_multiple_seats.yaml")
 def handle_book_multiple_seats():
     return book_multiple_seats()
+
+
+@seat_routes.route("/cinema/<cinema_id>", methods=["GET"])
+@swag_from("../swagger/seat/get_seats_by_cinema.yaml")
+def handle_get_seats_by_cinema(cinema_id):
+    return get_seats_by_cinema(cinema_id)

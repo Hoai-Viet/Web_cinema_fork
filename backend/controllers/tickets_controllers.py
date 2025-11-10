@@ -1,5 +1,5 @@
 from flask import jsonify
-from models import db, Ticket, User, Seat, Showtime, Payment,TicketType
+from models import db, Ticket, User, Seat, Showtime, Payment, TicketType
 
 # ✅ Lấy tất cả vé
 def get_all_tickets():
@@ -12,6 +12,7 @@ def get_all_tickets():
             "showtime_id": t.showtime_id,
             "seat_id": t.seat_id,
             "price": t.price,
+            "quantity": t.quantity,
             "booked_at": t.booked_at.isoformat() if t.booked_at else None
         })
     return jsonify(result)
@@ -29,6 +30,7 @@ def get_ticket_by_id(ticket_id):
         "showtime_id": ticket.showtime_id,
         "seat_id": ticket.seat_id,
         "price": ticket.price,
+        "quantity": ticket.quantity,
         "booked_at": ticket.booked_at.isoformat() if ticket.booked_at else None
     })
 
@@ -50,6 +52,8 @@ def get_tickets_by_user(user_id):
             "room": seat.room.name if seat and seat.room else None,
             "start_time": t.showtime.start_time.isoformat() if t.showtime else None,
             "price": t.price,
+            "quantity": t.quantity,
+            "total_price": t.price * t.quantity,
             "booked_at": t.booked_at.isoformat() if t.booked_at else None
         })
     return jsonify(result)
@@ -74,16 +78,26 @@ def create_ticket(data):
     if existing_ticket:
         return jsonify({"message": "Seat already booked for this showtime"}), 400
 
+    # 👇 đọc quantity, mặc định = 1
+    quantity = data.get("quantity", 1)
+    if not isinstance(quantity, int) or quantity < 1:
+        return jsonify({"message": "Invalid quantity"}), 400
+
     new_ticket = Ticket(
         user_id=data["user_id"],
         showtime_id=data["showtime_id"],
         seat_id=data["seat_id"],
-        price=data["price"]
+        price=data["price"],
+        quantity=quantity
     )
     db.session.add(new_ticket)
     db.session.commit()
 
-    return jsonify({"message": "Ticket booked successfully", "ticket_id": new_ticket.id}), 201
+    return jsonify({
+        "message": "Ticket booked successfully",
+        "ticket_id": new_ticket.id,
+        "quantity": new_ticket.quantity
+    }), 201
 
 
 # ✅ Cập nhật vé (chỉ khi chưa thanh toán)
@@ -107,6 +121,11 @@ def update_ticket(ticket_id, data):
 
     if "price" in data:
         ticket.price = data["price"]
+
+    if "quantity" in data:
+        if not isinstance(data["quantity"], int) or data["quantity"] < 1:
+            return jsonify({"message": "Invalid quantity"}), 400
+        ticket.quantity = data["quantity"]
 
     db.session.commit()
     return jsonify({"message": "Ticket updated successfully"})
@@ -155,7 +174,7 @@ def get_ticket_details(ticket_id):
             "id": c.id,
             "name": c.name,
             "price": c.price
-        } for c in ticket.snacks
+        } for c in ticket.snack_combos
     ]
 
     payments = Payment.query.filter_by(ticket_id=ticket.id).all()
@@ -176,11 +195,15 @@ def get_ticket_details(ticket_id):
         "seat_number": seat.seat_number if seat else None,
         "showtime": showtime.start_time.isoformat() if showtime else None,
         "price": ticket.price,
+        "quantity": ticket.quantity,
+        "total_price": ticket.price * ticket.quantity,
         "booked_at": ticket.booked_at.isoformat() if ticket.booked_at else None,
         "combos": combos,
         "payment_info": payment_info
     })
 
+
+# ✅ Lấy loại vé theo suất chiếu
 def get_ticket_types_by_showtime(showtime_id):
     showtime = Showtime.query.get(showtime_id)
     if not showtime:

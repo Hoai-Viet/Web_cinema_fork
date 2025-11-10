@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db, Seat, Ticket
+from models import db, Seat, Ticket, Cinema, Room
 
 # ---------------------------
 # Lấy danh sách ghế
@@ -143,3 +143,39 @@ def book_multiple_seats():
         "message": "Seats booked successfully",
         "booked_seat_ids": seat_ids
     }), 201
+    
+def get_seats_by_cinema(cinema_id):
+    """
+    Lấy danh sách tất cả ghế thuộc về 1 rạp chiếu cụ thể (Cinema)
+    """
+    # Kiểm tra xem rạp có tồn tại không
+    cinema = Cinema.query.get(cinema_id)
+    if not cinema:
+        return jsonify({"message": "Cinema not found"}), 404
+
+    # Lấy tất cả các phòng của rạp
+    rooms = Room.query.filter_by(cinema_id=cinema.id).all()
+    if not rooms:
+        return jsonify({"message": "No rooms found for this cinema"}), 404
+
+    # Lấy toàn bộ ghế trong các phòng đó
+    room_ids = [r.id for r in rooms]
+    seats = Seat.query.filter(Seat.room_id.in_(room_ids)).all()
+
+    # Gộp kết quả thành danh sách có cấu trúc rõ ràng
+    result = []
+    for seat in seats:
+        result.append({
+            "id": seat.id,
+            "seat_number": seat.seat_number,
+            "seat_type": seat.seat_type,
+            "room_id": seat.room_id
+        })
+
+    return jsonify({
+        "cinema_id": cinema.id,
+        "cinema_name": cinema.name,
+        "total_rooms": len(rooms),
+        "total_seats": len(result),
+        "seats": result
+    }), 200
