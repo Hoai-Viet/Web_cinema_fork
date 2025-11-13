@@ -7,10 +7,11 @@ interface Showtime {
   room: string;
   start_time: string;
   end_time: string;
+  room_id: string
 }
 
 interface MovieShowTimeProps {
-  onSelectShowtime: (id: string) => void;
+  onSelectShowtime: (id: string, roomID: string) => void;
 }
 
 export default function MovieShowTime({
@@ -96,7 +97,7 @@ export default function MovieShowTime({
                         key={s.id}
                         onClick={() => {
                           setSelectedShowtimeId(s.id);
-                          onSelectShowtime(s.id);
+                          onSelectShowtime(s.id, s.room_id);
                         }}
                         className={`flex items-center justify-center px-6 py-3 border-2 rounded-md h-[70px] transition-all
                           ${

@@ -7,11 +7,15 @@ interface Cinema {
   phone: string;
 }
 
+interface MovieTheaterProps {
+  showtimeId: string | null;
+  onSelectCinema: (cinemaId: string) => void; // callback lên MovieDetail
+}
+
 export default function MovieTheater({
   showtimeId,
-}: {
-  showtimeId: string | null;
-}) {
+  onSelectCinema,
+}: MovieTheaterProps) {
   const [cinema, setCinema] = useState<Cinema | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedCinemaId, setSelectedCinemaId] = useState<string | null>(null);
@@ -32,25 +36,24 @@ export default function MovieTheater({
 
   const handleSelectCinema = (id: string) => {
     setSelectedCinemaId(id);
+    onSelectCinema(id); // gửi cinemaId ra ngoài
     console.log("✅ Rạp được chọn:", id);
-    // Nếu bạn muốn gửi ra ngoài component cha, có thể thêm prop onSelectCinema(id)
   };
 
   if (!showtimeId) return null;
 
   return (
     <div className="w-full text-white font-anton">
+      <h1 className="text-white font-anton text-3xl self-start">CINEMA LIST</h1>
       {cinema ? (
         <div
-          className={`bg-[#4E56C0] rounded-lg p-6 shadow-md transform ${
+          className={`bg-[#4E56C0] rounded-lg p-6 shadow-md transform mt-4 ${
             loading ? "opacity-60 scale-[0.99]" : "opacity-100 scale-100"
           } flex justify-between items-center`}
         >
           {/* Thông tin rạp */}
           <div>
-            <h2 className="text-yellow-300 font-bold text-2xl mb-2">
-              {cinema.name}
-            </h2>
+            <h2 className="text-yellow-300 text-2xl mb-2">{cinema.name}</h2>
             <p className="text-white text-lg">{cinema.address}</p>
             <p className="text-lg">{cinema.phone}</p>
 
@@ -80,7 +83,7 @@ export default function MovieTheater({
         </div>
       ) : (
         <p className="text-gray-400 mt-4">
-          Không tìm thấy thông tin rạp cho suất chiếu này.
+          No cinema information found for this showtime.
         </p>
       )}
     </div>
