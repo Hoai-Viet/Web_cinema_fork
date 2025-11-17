@@ -13,6 +13,7 @@ from routes.cinema_routes import cinema_routes
 from routes.payments_routes import payment_routes
 from routes.combo_routes import combo_routes
 from routes.ticket_type_routes import ticket_type_routes
+from routes.user_routes import user_routes
 from flask_cors import CORS
 from routes.ai_routes import ai_routes
 
@@ -22,7 +23,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)  
 
-    CORS(app)
+    CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
     # ---------------------------
     # JWT CONFIG
     # ---------------------------
@@ -96,6 +103,7 @@ def create_app():
             "/static",
             "/swagger",
             "/movie",
+            "/ticket",
             "/"
         ]
         if any(request.path.startswith(prefix) for prefix in open_prefixes):
@@ -119,6 +127,7 @@ def create_app():
     app.register_blueprint(cinema_routes, url_prefix="/cinema")
     app.register_blueprint(payment_routes, url_prefix="/payment")
     app.register_blueprint(combo_routes, url_prefix="/combo")
+    app.register_blueprint(user_routes, url_prefix="/user")
     app.register_blueprint(ai_routes, url_prefix="/api")
 
     @app.route("/")

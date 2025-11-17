@@ -142,7 +142,6 @@ class Ticket(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
     booked_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
     user = db.relationship("User", back_populates="tickets")
     showtime = db.relationship("Showtime", back_populates="tickets")
     seat = db.relationship("Seat", back_populates="tickets")

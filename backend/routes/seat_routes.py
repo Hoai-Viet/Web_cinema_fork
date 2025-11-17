@@ -9,7 +9,10 @@ from controllers.seat_controllers import (
     get_seats_by_room,
     get_seats_status,
     book_multiple_seats,
-    get_seats_by_cinema
+    get_seats_by_cinema,
+    get_seats_for_showtime,
+    get_seats_status_by_showtime
+    
 )
 
 
@@ -74,3 +77,13 @@ def handle_book_multiple_seats():
 @swag_from("../swagger/seat/get_seats_by_cinema.yaml")
 def handle_get_seats_by_cinema(cinema_id):
     return get_seats_by_cinema(cinema_id)
+
+@seat_routes.route("/<showtime_id>/status", methods=["GET"])
+# @swag_from("../swagger/seat/get_seats_status_by_showtime.yaml")
+def route_get_seat_status_by_showtime(showtime_id):
+    return get_seats_status_by_showtime(showtime_id)
+
+@seat_routes.route("/<showtime_id>/seats", methods=["GET"])
+# @swag_from("../swagger/seat/get_seats_for_showtime.yaml")
+def route_get_seats_for_showtime(showtime_id):
+    return get_seats_for_showtime(showtime_id)

@@ -89,7 +89,7 @@ def ticket_details(ticket_id):
     return get_ticket_details(ticket_id)
 
 # ✅ Get ticket types by showtime ID
-@ticket_routes.route("/showtime/<string:showtime_id>/ticket-types", methods=["GET"])
-@jwt_required()
+@ticket_routes.route("/<string:showtime_id>/ticket-types", methods=["GET"])
+# @jwt_required()
 def route_get_ticket_types_by_showtime(showtime_id):
     return get_ticket_types_by_showtime(showtime_id)

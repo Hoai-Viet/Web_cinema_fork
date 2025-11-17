@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db, Seat, Ticket, Cinema, Room
+from models import db, Seat, Ticket, Cinema, Room,Showtime
 
 # ---------------------------
 # Lấy danh sách ghế
@@ -133,8 +133,8 @@ def book_multiple_seats():
         ticket = Ticket(
             seat_id=sid,
             showtime_id=showtime_id,
-            user_id=user_id,  # nếu bạn có cột user_id
-            booking_time=db.func.now()
+            user_id=user_id,
+            booked_at=db.func.now()
         )
         db.session.add(ticket)
 
@@ -179,3 +179,57 @@ def get_seats_by_cinema(cinema_id):
         "total_seats": len(result),
         "seats": result
     }), 200
+    
+def get_seats_status_by_showtime(showtime_id):
+    """
+    Lấy trạng thái ghế theo showtime:
+    - Dựa vào showtime → biết được room_id
+    - Load tất cả ghế trong room
+    - Check ghế nào đã được đặt (Ticket)
+    """
+
+    # 1. Lấy thông tin showtime
+    showtime = Showtime.query.get(showtime_id)
+    if not showtime:
+        return jsonify({"message": "Showtime not found"}), 404
+
+    room_id = showtime.room_id
+
+    # 2. Lấy tất cả ghế của phòng chiếu
+    seats = Seat.query.filter_by(room_id=room_id).all()
+
+    # 3. Lấy danh sách ghế đã đặt cho showtime này
+    booked_seat_ids = {
+        t.seat_id for t in Ticket.query.filter_by(showtime_id=showtime_id).all()
+    }
+
+    # 4. Trả về ghế + trạng thái
+    result = []
+    for s in seats:
+        result.append({
+            "id": s.id,
+            "seat_number": s.seat_number,
+            "seat_type": s.seat_type,
+            "is_booked": s.id in booked_seat_ids
+        })
+
+    return jsonify({
+        "showtime_id": showtime_id,
+        "room_id": room_id,
+        "total_seats": len(result),
+        "seats": result
+    }), 200
+
+
+def get_seats_for_showtime(showtime_id):
+    showtime = Showtime.query.get(showtime_id)
+    if not showtime:
+        return jsonify({"message": "Showtime not found"}), 404
+
+    seats = Seat.query.filter_by(room_id=showtime.room_id).all()
+
+    return jsonify([{
+        "id": s.id,
+        "seat_number": s.seat_number,
+        "seat_type": s.seat_type
+    } for s in seats]), 200

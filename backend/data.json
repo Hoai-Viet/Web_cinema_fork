@@ -64,11 +64,11 @@
   "movies": [
     {
       "title": "Avengers: Endgame",
-      "description": "Sau sự kiện Infinity War, các siêu anh hùng tập hợp để đảo ngược hành động của Thanos.",
+      "description": "Sau sự kiện Infinity War...",
       "genre": "Hành động, Khoa học viễn tưởng",
       "duration_minutes": 181,
       "movie_content": "https://example.com/avengers",
-      "poster_url": "https://via.placeholder.com/300x450?text=Avengers",
+      "poster_url": "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F11-2025%2Ftruy-tien-long-dien-huong-poster.jpg&w=1920&q=75",
       "country": "Mỹ",
       "age_rating": "P",
       "language": "Tiếng Anh - Phụ đề Việt",
@@ -76,11 +76,11 @@
     },
     {
       "title": "Your Name",
-      "description": "Hai người xa lạ bỗng dưng hoán đổi cơ thể và bắt đầu hành trình tìm kiếm nhau.",
+      "description": "Hai người xa lạ hoán đổi cơ thể...",
       "genre": "Hoạt hình, Lãng mạn",
       "duration_minutes": 106,
       "movie_content": "https://example.com/yourname",
-      "poster_url": "https://via.placeholder.com/300x450?text=Your+Name",
+      "poster_url": "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F11-2025%2Ftruy-tien-long-dien-huong-poster.jpg&w=1920&q=75",
       "country": "Nhật Bản",
       "age_rating": "K",
       "language": "Tiếng Nhật - Phụ đề Việt",
@@ -124,7 +124,7 @@
     },
     {
       "name": "Vé VIP 3D",
-      "description": "Ghế VIP cho phòng chiếu 3D",
+      "description": "Ghế VIP cho phòng 3D",
       "base_price": 200000,
       "room_type": "Deluxe"
     }
@@ -133,19 +133,19 @@
   "snack_combos": [
     {
       "name": "Combo 1: Popcorn + Nước Ngọt",
-      "description": "1 Bắp rang bơ lớn + 2 Nước ngọt 32oz",
+      "description": "1 Bắp rang bơ lớn + 2 Nước ngọt",
       "price": 119000,
       "image_url": "https://via.placeholder.com/300x200?text=Combo+1"
     },
     {
       "name": "Combo Couple",
-      "description": "1 Bắp ngọt lớn + 1 Bắp mặn lớn + 2 Nước ngọt",
+      "description": "1 Bắp ngọt lớn + 1 Bắp mặn lớn + 2 nước ngọt",
       "price": 169000,
       "image_url": "https://via.placeholder.com/300x200?text=Couple"
     },
     {
       "name": "Combo VIP",
-      "description": "1 Bắp caramel + 1 Hotdog + 1 Nước ngọt lớn + 1 Khoai tây chiên",
+      "description": "1 Bắp caramel + 1 Hotdog + 1 Nước + 1 Khoai tây",
       "price": 249000,
       "image_url": "https://via.placeholder.com/300x200?text=VIP"
     }
@@ -153,20 +153,26 @@
 
   "tickets": [
     {
-      "user": "demo_user",
-      "showtime": "Avengers: Endgame - Phòng 1 - 18:30",
-      "seat": "A1",
-      "ticket_type": "Vé Standard 2D",
+      "id": "T1",
+      "user_id": "U1",
+      "showtime_id": "SHT1",
+      "seat_id": "SEAT-A1",
+      "ticket_type_id": "TT_STANDARD",
       "price": 90000,
-      "snack_combos": ["Combo 1: Popcorn + Nước Ngọt"]
+      "quantity": 1,
+      "snack_combos": ["Combo 1"],
+      "booked_at": "2025-02-01T10:00:00Z"
     },
     {
-      "user": "demo_user",
-      "showtime": "Avengers: Endgame - Phòng 2 IMAX - 20:00",
-      "seat": "B1",
-      "ticket_type": "Vé Deluxe IMAX",
+      "id": "T2",
+      "user_id": "U1",
+      "showtime_id": "SHT2",
+      "seat_id": "SEAT-B1",
+      "ticket_type_id": "TT_IMAX",
       "price": 150000,
-      "snack_combos": ["Combo VIP"]
+      "quantity": 1,
+      "snack_combos": ["Combo VIP"],
+      "booked_at": "2025-02-01T12:00:00Z"
     }
   ],
 

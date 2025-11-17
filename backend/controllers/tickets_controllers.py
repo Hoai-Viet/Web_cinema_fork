@@ -1,26 +1,39 @@
 from flask import jsonify
 from models import db, Ticket, User, Seat, Showtime, Payment, TicketType
+from sqlalchemy.orm import joinedload
 
-# ✅ Lấy tất cả vé
+
+# ============================================================================
+# GET ALL TICKETS
+# ============================================================================
 def get_all_tickets():
-    tickets = Ticket.query.all()
-    result = []
-    for t in tickets:
-        result.append({
-            "id": t.id,
-            "user_id": t.user_id,
-            "showtime_id": t.showtime_id,
-            "seat_id": t.seat_id,
-            "price": t.price,
-            "quantity": t.quantity,
-            "booked_at": t.booked_at.isoformat() if t.booked_at else None
-        })
-    return jsonify(result)
+    tickets = Ticket.query.options(
+        joinedload(Ticket.showtime),
+        joinedload(Ticket.seat),
+        joinedload(Ticket.ticket_type)
+    ).all()
+
+    return jsonify([{
+        "id": t.id,
+        "user_id": t.user_id,
+        "showtime_id": t.showtime_id,
+        "seat_id": t.seat_id,
+        "ticket_type_id": t.ticket_type_id,
+        "price": t.price,
+        "booked_at": t.booked_at.isoformat()
+    } for t in tickets]), 200
 
 
-# ✅ Lấy vé theo ID
+# ============================================================================
+# GET TICKET BY ID
+# ============================================================================
 def get_ticket_by_id(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = Ticket.query.options(
+        joinedload(Ticket.showtime),
+        joinedload(Ticket.seat),
+        joinedload(Ticket.ticket_type)
+    ).get(ticket_id)
+
     if not ticket:
         return jsonify({"message": "Ticket not found"}), 404
 
@@ -29,201 +42,205 @@ def get_ticket_by_id(ticket_id):
         "user_id": ticket.user_id,
         "showtime_id": ticket.showtime_id,
         "seat_id": ticket.seat_id,
+        "ticket_type_id": ticket.ticket_type_id,
         "price": ticket.price,
-        "quantity": ticket.quantity,
-        "booked_at": ticket.booked_at.isoformat() if ticket.booked_at else None
-    })
+        "booked_at": ticket.booked_at.isoformat()
+    }), 200
 
 
-# ✅ Lấy danh sách vé của 1 user
+# ============================================================================
+# GET TICKETS BY USER
+# ============================================================================
 def get_tickets_by_user(user_id):
-    tickets = Ticket.query.filter_by(user_id=user_id).all()
+    tickets = Ticket.query.filter_by(user_id=user_id).options(
+        joinedload(Ticket.showtime).joinedload(Showtime.movie),
+        joinedload(Ticket.seat).joinedload(Seat.room)
+    ).all()
+
     if not tickets:
-        return jsonify({"message": "No tickets found for this user"}), 404
+        return jsonify({"message": "No tickets found"}), 404
 
     result = []
     for t in tickets:
-        movie = t.showtime.movie if t.showtime else None
-        seat = t.seat
         result.append({
-            "id": t.id,
-            "movie": movie.title if movie else None,
-            "seat_number": seat.seat_number if seat else None,
-            "room": seat.room.name if seat and seat.room else None,
-            "start_time": t.showtime.start_time.isoformat() if t.showtime else None,
+            "ticket_id": t.id,
+            "movie": t.showtime.movie.title,
+            "room": t.seat.room.name,
+            "seat_number": t.seat.seat_number,
+            "start_time": t.showtime.start_time.isoformat(),
             "price": t.price,
-            "quantity": t.quantity,
-            "total_price": t.price * t.quantity,
-            "booked_at": t.booked_at.isoformat() if t.booked_at else None
+            "booked_at": t.booked_at.isoformat()
         })
-    return jsonify(result)
+
+    return jsonify(result), 200
 
 
-# ✅ Đặt vé mới
+# ============================================================================
+# CREATE TICKET — ĐẶT VÉ MỚI
+# ============================================================================
 def create_ticket(data):
-    required_fields = ("user_id", "showtime_id", "seat_id", "price")
-    if not data or not all(k in data for k in required_fields):
+    required = ("user_id", "showtime_id", "seat_id", "ticket_type_id")
+    if not data or not all(k in data for k in required):
         return jsonify({"message": "Missing required fields"}), 400
 
-    if not User.query.get(data["user_id"]):
-        return jsonify({"message": "User not found"}), 404
-    if not Showtime.query.get(data["showtime_id"]):
-        return jsonify({"message": "Showtime not found"}), 404
-    if not Seat.query.get(data["seat_id"]):
-        return jsonify({"message": "Seat not found"}), 404
+    user = User.query.get(data["user_id"])
+    showtime = Showtime.query.get(data["showtime_id"])
+    seat = Seat.query.get(data["seat_id"])
+    ticket_type = TicketType.query.get(data["ticket_type_id"])
 
-    existing_ticket = Ticket.query.filter_by(
-        showtime_id=data["showtime_id"], seat_id=data["seat_id"]
-    ).first()
-    if existing_ticket:
-        return jsonify({"message": "Seat already booked for this showtime"}), 400
+    if not user: return jsonify({"message": "User not found"}), 404
+    if not showtime: return jsonify({"message": "Showtime not found"}), 404
+    if not seat: return jsonify({"message": "Seat not found"}), 404
+    if not ticket_type: return jsonify({"message": "Ticket type not found"}), 404
 
-    # 👇 đọc quantity, mặc định = 1
-    quantity = data.get("quantity", 1)
-    if not isinstance(quantity, int) or quantity < 1:
-        return jsonify({"message": "Invalid quantity"}), 400
+    # Ghế phải thuộc đúng phòng chiếu
+    if seat.room_id != showtime.room_id:
+        return jsonify({"message": "Seat does not belong to this showtime's room"}), 400
+
+    # Ghế đã đặt ?
+    exists = Ticket.query.filter_by(showtime_id=showtime.id, seat_id=seat.id).first()
+    if exists:
+        return jsonify({"message": "Seat already booked"}), 409
+
+    # ===== TÍNH GIÁ VÉ =====
+    final_price = ticket_type.base_price
+    # Có thể + thêm phụ phí theo seat_type nếu muốn
 
     new_ticket = Ticket(
-        user_id=data["user_id"],
-        showtime_id=data["showtime_id"],
-        seat_id=data["seat_id"],
-        price=data["price"],
-        quantity=quantity
+        user_id=user.id,
+        showtime_id=showtime.id,
+        seat_id=seat.id,
+        ticket_type_id=ticket_type.id,
+        price=final_price,
+        quantity=1
     )
+
     db.session.add(new_ticket)
     db.session.commit()
 
     return jsonify({
         "message": "Ticket booked successfully",
         "ticket_id": new_ticket.id,
-        "quantity": new_ticket.quantity
+        "price": final_price
     }), 201
 
 
-# ✅ Cập nhật vé (chỉ khi chưa thanh toán)
+# ============================================================================
+# UPDATE TICKET — chỉ khi chưa thanh toán
+# ============================================================================
 def update_ticket(ticket_id, data):
     ticket = Ticket.query.get(ticket_id)
     if not ticket:
         return jsonify({"message": "Ticket not found"}), 404
 
+    # Không sửa vé đã thanh toán
+    if ticket.payment and ticket.payment.status == "Completed":
+        return jsonify({"message": "Cannot update a paid ticket"}), 400
+
     if "seat_id" in data:
-        existing_ticket = Ticket.query.filter_by(
-            showtime_id=ticket.showtime_id, seat_id=data["seat_id"]
-        ).first()
-        if existing_ticket and existing_ticket.id != ticket.id:
-            return jsonify({"message": "Seat already booked"}), 400
-        ticket.seat_id = data["seat_id"]
+        seat = Seat.query.get(data["seat_id"])
+        if not seat:
+            return jsonify({"message": "Seat not found"}), 404
 
-    if "showtime_id" in data:
-        if not Showtime.query.get(data["showtime_id"]):
-            return jsonify({"message": "Showtime not found"}), 404
-        ticket.showtime_id = data["showtime_id"]
+        exists = Ticket.query.filter_by(showtime_id=ticket.showtime_id, seat_id=seat.id).first()
+        if exists and exists.id != ticket.id:
+            return jsonify({"message": "Seat already booked"}), 409
 
-    if "price" in data:
-        ticket.price = data["price"]
+        ticket.seat_id = seat.id
 
-    if "quantity" in data:
-        if not isinstance(data["quantity"], int) or data["quantity"] < 1:
-            return jsonify({"message": "Invalid quantity"}), 400
-        ticket.quantity = data["quantity"]
+    if "ticket_type_id" in data:
+        tt = TicketType.query.get(data["ticket_type_id"])
+        if not tt:
+            return jsonify({"message": "Ticket type not found"}), 404
+        ticket.ticket_type_id = tt.id
+        ticket.price = tt.base_price  # cập nhật giá
 
     db.session.commit()
-    return jsonify({"message": "Ticket updated successfully"})
+    return jsonify({"message": "Ticket updated successfully"}), 200
 
 
-# ✅ Huỷ vé
+# ============================================================================
+# DELETE TICKET — chỉ khi chưa thanh toán
+# ============================================================================
 def delete_ticket(ticket_id):
     ticket = Ticket.query.get(ticket_id)
     if not ticket:
         return jsonify({"message": "Ticket not found"}), 404
 
+    if ticket.payment and ticket.payment.status == "Completed":
+        return jsonify({"message": "Cannot cancel a paid ticket"}), 400
+
     db.session.delete(ticket)
     db.session.commit()
-    return jsonify({"message": "Ticket cancelled successfully"})
+    return jsonify({"message": "Ticket cancelled"}), 200
 
 
-# ✅ Lấy ghế trống của suất chiếu
+# ============================================================================
+# GET AVAILABLE SEATS (BY SHOWTIME)
+# ============================================================================
 def get_available_seats(showtime_id):
-    booked_seats = db.session.query(Ticket.seat_id).filter_by(showtime_id=showtime_id)
-    available_seats = Seat.query.filter(~Seat.id.in_(booked_seats)).all()
+    showtime = Showtime.query.get(showtime_id)
+    if not showtime:
+        return jsonify({"message": "Showtime not found"}), 404
 
-    result = [
-        {
-            "id": s.id,
-            "seat_number": s.seat_number,
-            "seat_type": s.seat_type,
-            "room_type": s.room.room_type if s.room else None
-        }
-        for s in available_seats
-    ]
-    return jsonify(result)
+    booked = db.session.query(Ticket.seat_id).filter_by(showtime_id=showtime_id)
+
+    seats = Seat.query.filter(
+        Seat.room_id == showtime.room_id,
+        ~Seat.id.in_(booked)
+    ).all()
+
+    return jsonify([{
+        "id": s.id,
+        "seat_number": s.seat_number,
+        "seat_type": s.seat_type
+    } for s in seats]), 200
 
 
-# ✅ Lấy chi tiết vé
+# ============================================================================
+# GET TICKET DETAILS
+# ============================================================================
 def get_ticket_details(ticket_id):
-    ticket = Ticket.query.get(ticket_id)
+    ticket = Ticket.query.options(
+        joinedload(Ticket.showtime).joinedload(Showtime.movie),
+        joinedload(Ticket.seat).joinedload(Seat.room)
+    ).get(ticket_id)
+
     if not ticket:
         return jsonify({"message": "Ticket not found"}), 404
 
-    showtime = ticket.showtime
-    movie = showtime.movie if showtime else None
-    seat = ticket.seat
-
-    combos = [
-        {
-            "id": c.id,
-            "name": c.name,
-            "price": c.price
-        } for c in ticket.snack_combos
-    ]
-
-    payments = Payment.query.filter_by(ticket_id=ticket.id).all()
-    payment_info = [
-        {
-            "amount": p.amount,
-            "method": p.payment_method,
-            "status": p.status,
-            "created_at": p.created_at.isoformat()
-        }
-        for p in payments
-    ]
+    payment = ticket.payment
 
     return jsonify({
         "ticket_id": ticket.id,
-        "movie": movie.title if movie else None,
-        "room": seat.room.name if seat and seat.room else None,
-        "seat_number": seat.seat_number if seat else None,
-        "showtime": showtime.start_time.isoformat() if showtime else None,
+        "movie": ticket.showtime.movie.title,
+        "room": ticket.seat.room.name,
+        "seat_number": ticket.seat.seat_number,
+        "showtime": ticket.showtime.start_time.isoformat(),
         "price": ticket.price,
-        "quantity": ticket.quantity,
-        "total_price": ticket.price * ticket.quantity,
-        "booked_at": ticket.booked_at.isoformat() if ticket.booked_at else None,
-        "combos": combos,
-        "payment_info": payment_info
-    })
+        "booked_at": ticket.booked_at.isoformat(),
+        "payment": {
+            "amount": payment.amount,
+            "method": payment.payment_method,
+            "status": payment.status,
+            "created_at": payment.created_at.isoformat()
+        } if payment else None
+    }), 200
 
 
-# ✅ Lấy loại vé theo suất chiếu
+# ============================================================================
+# GET TICKET TYPES FOR SHOWTIME
+# ============================================================================
 def get_ticket_types_by_showtime(showtime_id):
     showtime = Showtime.query.get(showtime_id)
     if not showtime:
         return jsonify({"message": "Showtime not found"}), 404
 
-    room = showtime.room
-    if not room:
-        return jsonify({"message": "Room not found"}), 404
+    ticket_types = TicketType.query.all()
 
-    # Lấy loại vé phù hợp với loại phòng (Standard / Deluxe ...)
-    ticket_types = TicketType.query.filter_by(room_type=room.room_type).all()
-
-    result = []
-    for t in ticket_types:
-        result.append({
-            "id": t.id,
-            "name": t.name,
-            "description": t.description,
-            "base_price": t.base_price,
-            "room_type": t.room_type
-        })
-
-    return jsonify(result), 200
+    return jsonify([{
+        "id": t.id,
+        "name": t.name,
+        "description": t.description,
+        "base_price": t.base_price
+    } for t in ticket_types]), 200
