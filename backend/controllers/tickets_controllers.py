@@ -87,11 +87,16 @@ def create_ticket(data):
     showtime = Showtime.query.get(data["showtime_id"])
     seat = Seat.query.get(data["seat_id"])
     ticket_type = TicketType.query.get(data["ticket_type_id"])
+    payment_id = data.get("payment_id")  # <-- thêm payment_id tùy chọn
 
-    if not user: return jsonify({"message": "User not found"}), 404
-    if not showtime: return jsonify({"message": "Showtime not found"}), 404
-    if not seat: return jsonify({"message": "Seat not found"}), 404
-    if not ticket_type: return jsonify({"message": "Ticket type not found"}), 404
+    if not user: 
+        return jsonify({"message": "User not found"}), 404
+    if not showtime: 
+        return jsonify({"message": "Showtime not found"}), 404
+    if not seat: 
+        return jsonify({"message": "Seat not found"}), 404
+    if not ticket_type: 
+        return jsonify({"message": "Ticket type not found"}), 404
 
     # Ghế phải thuộc đúng phòng chiếu
     if seat.room_id != showtime.room_id:
@@ -112,7 +117,8 @@ def create_ticket(data):
         seat_id=seat.id,
         ticket_type_id=ticket_type.id,
         price=final_price,
-        quantity=1
+        quantity=1,
+        payment_id=payment_id  # <-- gán payment_id nếu có
     )
 
     db.session.add(new_ticket)
@@ -121,8 +127,10 @@ def create_ticket(data):
     return jsonify({
         "message": "Ticket booked successfully",
         "ticket_id": new_ticket.id,
-        "price": final_price
+        "price": final_price,
+        "payment_id": new_ticket.payment_id  # trả luôn payment_id nếu có
     }), 201
+
 
 
 # ============================================================================

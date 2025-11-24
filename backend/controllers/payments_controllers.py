@@ -1,192 +1,208 @@
 from flask import jsonify, request
-from models import db, Payment, Ticket,ticket_snack, SnackCombo
+from models import db, Payment, Ticket, SnackCombo, ticket_snack, User, Showtime,TicketType
+from datetime import datetime
+from sqlalchemy.orm import joinedload
+
+
+# ============================================================================ 
+# PREVIEW PAYMENT (before checkout) - mỗi ticket chỉ 1 combo
+# ============================================================================
+from flask import jsonify, request
+from models import db, Payment, Ticket, SnackCombo, ticket_snack
 from datetime import datetime
 
+# ====================================================================
+# PREVIEW PAYMENT
+# ====================================================================
+def preview_payment():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    showtime_id = data.get("showtime_id")
+    seat_ids = data.get("seat_ids", [])
+    ticket_type_id = data.get("ticket_type_id")
+    snack = data.get("snack_combo")  # chỉ 1 combo
 
-#  User tạo payment (thanh toán vé)
+    if not user_id or not showtime_id or not seat_ids or not ticket_type_id:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    showtime = Showtime.query.get(showtime_id)
+    ticket_type = TicketType.query.get(ticket_type_id)
+
+    if not showtime or not ticket_type:
+        return jsonify({"error": "Invalid showtime or ticket type"}), 404
+
+    total_ticket_price = ticket_type.base_price * len(seat_ids)
+    total_snack_price = 0
+    snack_detail = []
+
+    if snack:
+        combo = SnackCombo.query.get(snack.get("combo_id"))
+        qty = snack.get("quantity", 1)
+
+        if not combo:
+            return jsonify({"error": "Snack combo not found"}), 404
+
+        total_snack_price = combo.price * qty
+        snack_detail.append({
+            "combo_id": combo.id,
+            "name": combo.name,
+            "unit_price": combo.price,
+            "quantity": qty,
+            "total_price": total_snack_price
+        })
+
+    return jsonify({
+        "user_id": user_id,
+        "showtime_id": showtime.id,
+        "seats": seat_ids,
+        "ticket_type": {"id": ticket_type.id, "name": ticket_type.name, "price": ticket_type.base_price},
+        "tickets_total": total_ticket_price,
+        "snack": snack_detail,
+        "snack_total": total_snack_price,
+        "final_amount": total_ticket_price + total_snack_price
+    }), 200
+
+
+
+# ====================================================================
+# CREATE PAYMENT
+# ====================================================================
+from flask import jsonify, request
+from datetime import datetime
+from models import db, Ticket, User, Showtime, TicketType, SnackCombo, Payment, ticket_snack
+
 def create_payment():
     data = request.get_json()
-    ticket_id = data.get("ticket_id")
-    snacks = data.get("snacks", [])   # list combo + quantity
+
+    user_id = data.get("user_id")
+    showtime_id = data.get("showtime_id")
+    seat_ids = data.get("seat_ids", [])
+    ticket_type_id = data.get("ticket_type_id")
+    snack = data.get("snack_combo")  # chỉ 1 combo
     payment_method = data.get("payment_method", "Cash")
 
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify({"error": "Ticket not found"}), 404
+    if not user_id or not showtime_id or not seat_ids or not ticket_type_id:
+        return jsonify({"error": "Missing required fields"}), 400
 
-    total_amount = ticket.price  # start with ticket price
+    user = User.query.get(user_id)
+    showtime = Showtime.query.get(showtime_id)
+    ticket_type = TicketType.query.get(ticket_type_id)
 
-    # Xử lý combo
-    for item in snacks:
-        combo_id = item["combo_id"]
-        qty = item.get("quantity", 1)
+    if not user or not showtime or not ticket_type:
+        return jsonify({"error": "Invalid user, showtime or ticket type"}), 404
 
-        combo = SnackCombo.query.get(combo_id)
-        if not combo:
-            return jsonify({"error": f"Snack combo {combo_id} not found"}), 404
+    # Kiểm tra ghế đã đặt chưa
+    existing_seats = db.session.query(Ticket.seat_id).filter(
+        Ticket.showtime_id == showtime_id,
+        Ticket.seat_id.in_(seat_ids)
+    ).all()
+    if existing_seats:
+        existing_seat_list = [s[0] for s in existing_seats]
+        return jsonify({"error": f"Seats already booked: {existing_seat_list}"}), 409
 
-        # Gắn combo vào ticket
-        stmt = ticket_snack.insert().values(
-            ticket_id=ticket_id,
-            snack_combo_id=combo_id,
-            quantity=qty
-        )
-        db.session.execute(stmt)
+    total_ticket_price = ticket_type.base_price * len(seat_ids)
+    total_snack_price = 0
 
-        total_amount += combo.price * qty
-
-    # Tạo payment
+    # Tạo payment trước để gắn ticket
     payment = Payment(
-        ticket_id=ticket_id,
-        amount=total_amount,
+        amount=0,
         payment_method=payment_method,
         status="Pending",
+        user_id=user.id,
         created_at=datetime.utcnow()
     )
     db.session.add(payment)
+    db.session.flush()  # flush để lấy payment.id
+
+    # Tạo ticket cho từng ghế
+    tickets = []
+    for seat_id in seat_ids:
+        ticket = Ticket(
+            user_id=user.id,
+            showtime_id=showtime.id,
+            seat_id=seat_id,
+            ticket_type_id=ticket_type.id,
+            price=ticket_type.base_price,
+            payment_id=payment.id,
+            quantity=1
+        )
+        db.session.add(ticket)
+        tickets.append(ticket)
+    db.session.flush()  # flush để có ticket.id
+
+    # Gắn snack combo (tối đa 1) vào ticket đầu tiên
+    if snack:
+        combo = SnackCombo.query.get(snack.get("combo_id"))
+        qty = snack.get("quantity", 1)
+        if not combo:
+            return jsonify({"error": "Snack combo not found"}), 404
+
+        db.session.execute(
+            ticket_snack.insert().values(
+                ticket_id=tickets[0].id,
+                snack_combo_id=combo.id,
+                quantity=qty
+            )
+        )
+        total_snack_price = combo.price * qty
+
+    # Tính tổng tiền
+    payment.amount = total_ticket_price + total_snack_price
     db.session.commit()
 
     return jsonify({
-        "message": "Payment created successfully",
+        "message": "Payment and tickets created successfully",
         "payment_id": payment.id,
-        "amount": total_amount,
-        "status": payment.status
-    }), 201
-
-
-#  Xem thông tin thanh toán của user (theo ticket_id)
-def get_payment_by_ticket(ticket_id):
-    payment = Payment.query.filter_by(ticket_id=ticket_id).first()
-    if not payment:
-        return jsonify({"error": "Payment not found"}), 404
-
-    return jsonify({
-        "payment_id": payment.id,
-        "ticket_id": payment.ticket_id,
+        "user_id": payment.user_id,
         "amount": payment.amount,
         "payment_method": payment.payment_method,
         "status": payment.status,
-        "created_at": payment.created_at.strftime("%Y-%m-%d %H:%M:%S")
-    }), 200
+        "ticket_ids": [t.id for t in tickets]
+    }), 201
 
 
-#  Cập nhật trạng thái thanh toán (ví dụ: sau khi user trả tiền xong)
-def update_payment_status(payment_id):
-    data = request.get_json()
-    new_status = data.get("status")
+# ============================================================================ 
+# GET PAYMENT DETAIL
+# ============================================================================
+def get_payment_detail(payment_id):
+    # Load payment kèm tickets, showtime, movie, seat và snack combos
+    payment = Payment.query.options(
+        joinedload(Payment.tickets)
+        .joinedload(Ticket.showtime)
+        .joinedload(Showtime.movie),
+        joinedload(Payment.tickets)
+        .joinedload(Ticket.seat),
+        joinedload(Payment.tickets)
+        .joinedload(Ticket.snacks).joinedload(ticket_snack.c.snack_combo)
+    ).get(payment_id)
 
-    if new_status not in ["Pending", "Completed", "Failed"]:
-        return jsonify({"error": "Invalid status"}), 400
-
-    payment = Payment.query.get(payment_id)
     if not payment:
         return jsonify({"error": "Payment not found"}), 404
 
-    payment.status = new_status
-    db.session.commit()
+    user = User.query.get(payment.user_id)
 
-    return jsonify({"message": f"Payment updated to {new_status}"}), 200
+    tickets_list = []
+    for t in payment.tickets:
+        # Lấy combo cho từng ticket
+        snacks_list = []
+        for ts in t.snacks:
+            combo = SnackCombo.query.get(ts.snack_combo_id)
+            snacks_list.append({
+                "combo_id": combo.id,
+                "name": combo.name,
+                "price": combo.price,
+                "quantity": ts.quantity
+            })
 
-
-# ------------------------------------------------------
-# Preview Payment
-# ------------------------------------------------------
-def preview_payment():
-    data = request.get_json()
-    ticket_id = data.get("ticket_id")
-    snacks = data.get("snacks", [])
-
-    ticket = Ticket.query.get(ticket_id)
-    if not ticket:
-        return jsonify({"error": "Ticket not found"}), 404
-
-    total_ticket_price = ticket.price
-    total_snack_price = 0
-    snack_details = []
-
-    for item in snacks:
-        combo_id = item["combo_id"]
-        qty = item.get("quantity", 1)
-
-        combo = SnackCombo.query.get(combo_id)
-        if not combo:
-            return jsonify({"error": f"Snack combo {combo_id} not found"}), 404
-
-        total_snack_price += combo.price * qty
-
-        snack_details.append({
-            "combo_id": combo.id,
-            "name": combo.name,
-            "quantity": qty,
-            "unit_price": combo.price,
-            "total_price": combo.price * qty
+        tickets_list.append({
+            "ticket_id": t.id,
+            "seat": t.seat.seat_number,
+            "room": t.showtime.room.name,
+            "movie": t.showtime.movie.title,
+            "showtime": t.showtime.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "price": t.price,
+            "snacks": snacks_list
         })
-
-    final_amount = total_ticket_price + total_snack_price
-
-    return jsonify({
-        "ticket_price": total_ticket_price,
-        "snacks": snack_details,
-        "snack_total": total_snack_price,
-        "final_amount": final_amount
-    }), 200
-
-
-# ------------------------------------------------------
-# Get all payments of a user
-# ------------------------------------------------------
-def get_payments_by_user(user_id):
-    payments = (
-        db.session.query(Payment)
-        .join(Ticket)
-        .filter(Ticket.user_id == user_id)
-        .all()
-    )
-
-    if not payments:
-        return jsonify({"message": "No payments found"}), 200
-
-    result = []
-    for p in payments:
-        result.append({
-            "payment_id": p.id,
-            "ticket_id": p.ticket_id,
-            "amount": p.amount,
-            "payment_method": p.payment_method,
-            "status": p.status,
-            "created_at": p.created_at.strftime("%Y-%m-%d %H:%M:%S")
-        })
-
-    return jsonify(result), 200
-
-
-# ------------------------------------------------------
-# Get payment detail
-# ------------------------------------------------------
-def get_payment_detail(ticket_id):
-    payment = Payment.query.filter_by(ticket_id=ticket_id).first()
-    if not payment:
-        return jsonify({"error": "Payment not found"}), 404
-
-    ticket = Ticket.query.get(ticket_id)
-
-    combo_rows = db.session.execute(
-        ticket_snack.select().where(ticket_snack.c.ticket_id == ticket_id)
-    )
-
-    snacks = []
-    for row in combo_rows:
-        combo = SnackCombo.query.get(row.snack_combo_id)
-        snacks.append({
-            "combo_id": combo.id,
-            "name": combo.name,
-            "quantity": row.quantity,
-            "unit_price": combo.price,
-            "total_price": combo.price * row.quantity
-        })
-
-    showtime = ticket.showtime
-    movie = showtime.movie
 
     return jsonify({
         "payment": {
@@ -194,35 +210,12 @@ def get_payment_detail(ticket_id):
             "amount": payment.amount,
             "payment_method": payment.payment_method,
             "status": payment.status,
-            "created_at": payment.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "user": {
+                "user_id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
         },
-        "ticket": {
-            "seat": ticket.seat.seat_number,
-            "room": showtime.room.name,
-            "showtime": showtime.start_time.strftime("%Y-%m-%d %H:%M:%S"),
-            "movie": movie.title
-        },
-        "snacks": snacks
+        "tickets": tickets_list
     }), 200
-
-
-# ------------------------------------------------------
-# Cancel payment
-# ------------------------------------------------------
-def cancel_payment(payment_id):
-    payment = Payment.query.get(payment_id)
-    if not payment:
-        return jsonify({"error": "Payment not found"}), 404
-
-    if payment.status == "Completed":
-        return jsonify({"error": "Cannot cancel a completed payment"}), 400
-
-    payment.status = "Failed"
-
-    db.session.execute(
-        ticket_snack.delete().where(ticket_snack.c.ticket_id == payment.ticket_id)
-    )
-
-    db.session.commit()
-
-    return jsonify({"message": "Payment cancelled successfully"}), 200

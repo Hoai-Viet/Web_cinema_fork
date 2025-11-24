@@ -142,19 +142,19 @@ class Ticket(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
     booked_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # New: one snack combo per ticket
+    snack_id = db.Column(db.String(36), db.ForeignKey("snack_combos.id"), nullable=True)
+    snack = db.relationship("SnackCombo", back_populates="tickets")
+
     user = db.relationship("User", back_populates="tickets")
     showtime = db.relationship("Showtime", back_populates="tickets")
     seat = db.relationship("Seat", back_populates="tickets")
     ticket_type = db.relationship("TicketType", back_populates="tickets")
 
-    # Many-to-many with SnackCombo
-    snack_combos = db.relationship(
-        "SnackCombo",
-        secondary=ticket_snack,
-        back_populates="tickets"
-    )
+    payment_id = db.Column(db.String(36), db.ForeignKey("payments.id"), nullable=True)
+    payment = db.relationship("Payment", back_populates="tickets")
 
-    payment = db.relationship("Payment", uselist=False, back_populates="ticket", cascade="all, delete-orphan")
 
 
 class SnackCombo(db.Model):
@@ -165,18 +165,17 @@ class SnackCombo(db.Model):
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.Text)
 
-    # Many-to-many with Ticket
-    tickets = db.relationship(
-        "Ticket",
-        secondary=ticket_snack,
-        back_populates="snack_combos"
-    )
+    # updated relationship
+    tickets = db.relationship("Ticket", back_populates="snack", lazy=True)
+
 
 
 class Payment(db.Model):
     __tablename__ = "payments"
+
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    ticket_id = db.Column(db.String(36), db.ForeignKey("tickets.id"), nullable=False, unique=True)
+    user_id = db.Column(db.String(36), db.ForeignKey("users.id"), nullable=False, index=True)
+
     amount = db.Column(db.Float, nullable=False)
     payment_method = db.Column(
         db.Enum("Cash", "Credit Card", "Momo", "ZaloPay", name="payment_methods"),
@@ -189,7 +188,9 @@ class Payment(db.Model):
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    ticket = db.relationship("Ticket", back_populates="payment")
+    tickets = db.relationship("Ticket", back_populates="payment", lazy=True)
+
+
 
 
 class Promotion(db.Model):
