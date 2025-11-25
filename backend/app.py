@@ -104,6 +104,7 @@ def create_app():
             "/swagger",
             "/movie",
             "/ticket",
+            "/cinema",
             "/"
         ]
         if any(request.path.startswith(prefix) for prefix in open_prefixes):
