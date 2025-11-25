@@ -9,9 +9,15 @@ interface Seat {
 interface MovieSeatProps {
   showtimeId: string | null;
   roomId?: string | null;
+  onSelectSeats?: (
+    seats: { seat_id: string; seat_number: string; seat_type: string }[]
+  ) => void;
 }
 
-export default function MovieSeat({ showtimeId }: MovieSeatProps) {
+export default function MovieSeat({
+  showtimeId,
+  onSelectSeats,
+}: MovieSeatProps) {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,6 +54,21 @@ export default function MovieSeat({ showtimeId }: MovieSeatProps) {
     );
   };
 
+  useEffect(() => {
+    if (!onSelectSeats) return;
+
+    const seatList = selected.map((id) => {
+      const found = seats.find((s) => s.id === id);
+      return {
+        seat_id: found?.id || "",
+        seat_number: found?.seat_number || "",
+        seat_type: found?.seat_type || "",
+      };
+    });
+
+    onSelectSeats(seatList);
+  }, [selected, seats]);
+
   const grouped = seats.reduce((acc: Record<string, Seat[]>, s) => {
     const row = s.seat_number.charAt(0);
     if (!acc[row]) acc[row] = [];
@@ -67,7 +88,6 @@ export default function MovieSeat({ showtimeId }: MovieSeatProps) {
     <div>
       {loading && <p className="text-white">Loading seats...</p>}
 
-      {/* Chỉ hiện H1 + dãy ghế khi đã có showtimeId */}
       {showtimeId && !loading && (
         <>
           <h1 className="text-white font-anton text-3xl text-center mb-4">

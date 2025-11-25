@@ -46,8 +46,13 @@ export default function Navbar() {
         {/* Auth section */}
         {user ? (
           <div className="flex items-center gap-3 text-white">
-            <User className="w-5 h-5" />
-            <span>{user}</span>
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 hover:text-purple-300"
+            >
+              <User className="w-5 h-5" />
+              <span>{user.username}</span>
+            </Link>
             <button
               onClick={handleLogout}
               className="flex items-center gap-1 text-sm text-red-400 hover:text-red-500"

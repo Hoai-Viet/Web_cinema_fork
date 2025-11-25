@@ -1,13 +1,27 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
 
+// =========================
+// 1. Định nghĩa kiểu User
+// =========================
+interface User {
+  id: number;
+  username: string;
+}
+
+// =========================
+// 2. Kiểu của AuthContext
+// =========================
 interface AuthContextType {
-  user: string | null;
+  user: User | null;
   token: string | null;
-  login: (username: string, token: string) => void;
+  login: (userObj: User, token: string) => void;
   logout: () => void;
 }
 
+// =========================
+// 3. Tạo context
+// =========================
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
@@ -15,27 +29,32 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
+// =========================
+// 4. Provider
+// =========================
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // 🔹 Khôi phục từ localStorage khi reload trang
+  // Load lại từ localStorage khi reload trang
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
-    if (storedUser) setUser(storedUser);
+
+    if (storedUser) setUser(JSON.parse(storedUser));
     if (storedToken) setToken(storedToken);
   }, []);
 
-  // 🔹 Khi login thành công
-  const login = (username: string, tokenValue: string) => {
-    setUser(username);
+  // Login: backend trả về user_id + username → FE gọi login()
+  const login = (userObj: User, tokenValue: string) => {
+    setUser(userObj);
     setToken(tokenValue);
-    localStorage.setItem("user", username);
+
+    localStorage.setItem("user", JSON.stringify(userObj));
     localStorage.setItem("token", tokenValue);
   };
 
-  // 🔹 Khi logout
+  // Logout
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -50,4 +69,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Hook lấy user
 export const useAuth = () => useContext(AuthContext);

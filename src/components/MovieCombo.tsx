@@ -6,9 +6,22 @@ interface Combo {
   description: string;
   price: number;
   image_url: string;
+  quantity?: number;
 }
 
-export default function MovieCombo() {
+interface ComboProps {
+  totalTicketQty: number;
+  onChangeComboTotal: (total: number, list: Combo[]) => void;
+  onLoaded: (
+    comboList: { id: string; name: string; quantity: number }[]
+  ) => void;
+}
+
+export default function MovieCombo({
+  totalTicketQty,
+  onChangeComboTotal,
+  onLoaded,
+}: ComboProps) {
   const [combos, setCombos] = useState<Combo[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
@@ -25,11 +38,46 @@ export default function MovieCombo() {
   }, []);
 
   const changeQty = (id: string, diff: number) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [id]: Math.max(0, prev[id] + diff),
-    }));
+    setQuantities((prev) => {
+      const currentTotal = Object.values(prev).reduce((s, q) => s + q, 0);
+
+      // Nếu bấm + nhưng tổng combo đã đủ số vé thì chặn lại
+      if (diff > 0 && currentTotal >= totalTicketQty) {
+        return prev; // KHÔNG tăng thêm
+      }
+
+      const newQty = Math.max(0, (prev[id] || 0) + diff);
+
+      return {
+        ...prev,
+        [id]: newQty,
+      };
+    });
   };
+
+  // Tính tổng + gửi ngược
+  useEffect(() => {
+    const list = combos
+      .map((c) => ({
+        ...c,
+        quantity: quantities[c.id] || 0,
+      }))
+      .filter((c) => c.quantity! > 0);
+
+    const total = list.reduce((sum, c) => sum + c.price * c.quantity!, 0);
+
+    // Gửi luôn combo_id chuẩn
+    onChangeComboTotal(total, list);
+
+    // Gửi lên cả name + quantity + id
+    onLoaded(
+      list.map((c) => ({
+        id: c.id,
+        name: c.name,
+        quantity: c.quantity!,
+      }))
+    );
+  }, [quantities, combos]);
 
   return (
     <div className="text-white mb-10">

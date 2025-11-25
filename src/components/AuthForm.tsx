@@ -23,7 +23,9 @@ export default function AuthForm() {
     confirmPassword: "",
   });
 
-  // -------------------- LOGIN --------------------
+  // =========================================================
+  //                       LOGIN
+  // =========================================================
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError({});
@@ -64,15 +66,26 @@ export default function AuthForm() {
         return;
       }
 
-      login(data.user.username, data.access_token);
-      localStorage.setItem("token", data.access_token);
+      // ============================================
+      //          LOGIN CHUẨN VỚI AUTHCONTEXT
+      // ============================================
+      login(
+        {
+          id: data.user.id,
+          username: data.user.username,
+        },
+        data.access_token
+      );
+
       navigate("/");
     } catch {
       setError({ user: "Network error, please try again later" });
     }
   };
 
-  // -------------------- SIGNUP --------------------
+  // =========================================================
+  //                       SIGN UP
+  // =========================================================
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignupError({});
@@ -81,7 +94,7 @@ export default function AuthForm() {
     const { name, birthday, email, username, password, confirmPassword } =
       signupData;
 
-    // 1. Kiểm tra trường trống
+    // Kiểm tra trường trống
     if (!name) err.name = "Please enter your name";
     if (!birthday) err.birthday = "Please select your birthday";
     if (!email) err.email = "Please enter your email";
@@ -89,7 +102,7 @@ export default function AuthForm() {
     if (!password) err.password = "Please enter your password";
     if (!confirmPassword) err.confirmPassword = "Please confirm your password";
 
-    // 2. Kiểm tra tuổi ≥ 12
+    // Kiểm tra tuổi
     if (birthday) {
       const birthDate = new Date(birthday);
       const today = new Date();
@@ -103,11 +116,10 @@ export default function AuthForm() {
       if (age < 12) err.birthday = "You must be at least 12 years old";
     }
 
-    // 3. Kiểm tra độ dài mật khẩu
+    // Kiểm tra mật khẩu
     if (password && password.length < 8)
       err.password = "Password must be at least 8 characters";
 
-    // 4. Kiểm tra xác nhận mật khẩu
     if (password && confirmPassword && password !== confirmPassword)
       err.confirmPassword = "Passwords do not match";
 
@@ -131,6 +143,7 @@ export default function AuthForm() {
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         alert(data.message || "Signup failed");
         return;
@@ -142,6 +155,8 @@ export default function AuthForm() {
       alert("Network error, please try again later");
     }
   };
+
+  // =========================================================
 
   return (
     <div className="w-full px-40">
@@ -222,7 +237,6 @@ export default function AuthForm() {
             </div>
           </form>
         )}
-
         {/* Sign up form */}
         {tab === "signup" && (
           <form onSubmit={handleSignup} className="space-y-4">

@@ -21,14 +21,21 @@ interface Movie {
   language?: string;
 }
 
-export default function MovieInFo() {
+export default function MovieInFo({
+  onLoaded,
+}: {
+  onLoaded: (title: string, age: string | null) => void;
+}) {
   const { id } = useParams<{ id: string }>();
   const [movie, setMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/movie/movies/${id}`)
       .then((res) => res.json())
-      .then((data) => setMovie(data))
+      .then((data) => {
+        setMovie(data);
+        onLoaded(data.title, data.age_rating || null);
+      })
       .catch((err) => console.error("Error fetching movie detail:", err));
   }, [id]);
 
@@ -92,9 +99,7 @@ export default function MovieInFo() {
         {/* Nội dung phim */}
         {movie.description && (
           <div className="mt-6">
-            <h2 className="text-xl font-roboto-semibold pb-2">
-              MOVIE CONTENT
-            </h2>
+            <h2 className="text-xl font-roboto-semibold pb-2">MOVIE CONTENT</h2>
             <p className="text-gray-300 leading-relaxed">{movie.description}</p>
           </div>
         )}

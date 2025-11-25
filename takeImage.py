@@ -1,7 +1,7 @@
 import requests
 
-url = "https://www.techtarget.com/rms/onlineImages/erp-supply_chain_management.png"
-file_name = "src/assets/poster/SCM.jpg"
+url = "https://digest.thegstco.com/wp-content/uploads/2023/06/2-1-1536x864.png"
+file_name = "src/assets/poster/shipper.jpg"
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"

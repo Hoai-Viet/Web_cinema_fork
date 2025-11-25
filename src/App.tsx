@@ -5,6 +5,8 @@ import AuthForm from "./components/AuthForm";
 import Forgotpassword from "./components/Forgotpassword";
 import Home from "./apps/home";
 import MovieDetail from "./apps/movie_detail";
+import ProfilePage from "./apps/profile";
+import Checkout from "./apps/checkout";
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           <Route path="/login" element={<AuthForm />} />
           <Route path="/forgotpassword" element={<Forgotpassword />} />
           <Route path="/movie/:id" element={<MovieDetail />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </div>
 

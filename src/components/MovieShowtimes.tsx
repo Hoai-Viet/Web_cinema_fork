@@ -7,15 +7,17 @@ interface Showtime {
   room: string;
   start_time: string;
   end_time: string;
-  room_id: string
+  room_id: string;
 }
 
 interface MovieShowTimeProps {
   onSelectShowtime: (id: string, roomID: string) => void;
+  onLoaded: (startTime: string | null, room: string | null) => void;
 }
 
 export default function MovieShowTime({
   onSelectShowtime,
+  onLoaded,
 }: MovieShowTimeProps) {
   const { id } = useParams<{ id: string }>();
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
@@ -27,7 +29,9 @@ export default function MovieShowTime({
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/showtime/movies/${id}/showtimes`)
       .then((res) => res.json())
-      .then((data) => setShowtimes(data))
+      .then((data) => {
+        setShowtimes(data);
+      })
       .catch((err) => console.error("Error fetching showtimes:", err));
   }, [id]);
 
@@ -98,6 +102,7 @@ export default function MovieShowTime({
                         onClick={() => {
                           setSelectedShowtimeId(s.id);
                           onSelectShowtime(s.id, s.room_id);
+                          onLoaded(s.start_time, s.room);
                         }}
                         className={`flex items-center justify-center px-6 py-3 border-2 rounded-md h-[70px] transition-all
                           ${

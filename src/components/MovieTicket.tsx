@@ -5,12 +5,15 @@ interface TicketType {
   name: string;
   description: string;
   base_price: number;
+  quantity?: number; // thêm optional
 }
 
 export default function MovieTickets({
   showtimeId,
+  onChangeTotal,
 }: {
   showtimeId: string | null;
+  onChangeTotal: (total: number, list: TicketType[]) => void; // SỬA
 }) {
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -38,11 +41,27 @@ export default function MovieTickets({
     }));
   };
 
+  // TÍNH TOTAL + LIST TICKET
+  useEffect(() => {
+    const list = ticketTypes
+      .map((t) => ({
+        ...t,
+        quantity: quantities[t.id] || 0,
+      }))
+      .filter((t) => t.quantity > 0);
+
+    const total = list.reduce((sum, t) => sum + t.base_price * t.quantity!, 0);
+
+    onChangeTotal(total, list); // TRẢ VỀ TOTAL + LIST
+  }, [quantities, ticketTypes]);
+
   if (!showtimeId) return null;
 
   return (
     <div className="w-full max-w-6xl mx-auto text-white font-anton">
-      <h1 className="text-white font-anton text-3xl text-center">SELECT TICKETS</h1>
+      <h1 className="text-white font-anton text-3xl text-center">
+        SELECT TICKETS
+      </h1>
 
       {ticketTypes.length === 0 ? (
         <p className="text-center text-gray-300 text-lg">
@@ -52,7 +71,7 @@ export default function MovieTickets({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
           {ticketTypes.map((t) => (
             <div key={t.id} className="border border-gray-500 rounded-xl p-6">
-              <h2 className="text-yellow-300  text-xl">{t.name}</h2>
+              <h2 className="text-yellow-300 text-xl">{t.name}</h2>
               <p className="text-white text-lg mt-2 font-normal">
                 {t.base_price.toLocaleString()} VND
               </p>
@@ -64,9 +83,11 @@ export default function MovieTickets({
                 >
                   −
                 </button>
+
                 <span className="text-lg w-6 text-center select-none">
                   {quantities[t.id] || 0}
                 </span>
+
                 <button
                   onClick={() => handleChange(t.id, 1)}
                   className="w-10 h-10 bg-gray-400 text-black rounded text-xl hover:bg-gray-300 transition"
