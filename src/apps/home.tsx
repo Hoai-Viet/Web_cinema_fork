@@ -1,7 +1,6 @@
 import ImageSliderContainer from "../components/ImageSlider/ImageSliderContainer";
 import PosterSlider from "../components/PosterSlider/PosterSlider";
 import Event from "../components/Event";
-import MovieDetail from "./movie_detail";
 
 export default function Home() {
   return (
