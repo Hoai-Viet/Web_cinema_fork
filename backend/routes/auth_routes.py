@@ -24,21 +24,14 @@ def login():
     data = request.get_json()
     return login_user(data)
 
-@auth_routes.route("/forgot-password", methods=["POST"])
-@swag_from("../swagger/auth/auth_forgot_password.yaml")
-def forgot():
-    data = request.get_json()
-    return forgot_password(data)
+# @auth_routes.route("/forgot-password", methods=["POST"])
+# @swag_from("../swagger/auth/auth_forgot_password.yaml")
+# def forgot():
+#     data = request.get_json()
+#     return forgot_password(data)
 
 @auth_routes.route("/logout", methods=["POST"])
 @jwt_required()
 @swag_from("../swagger/auth/auth_logout.yaml")
 def logout():
     return logout_user()
-
-@auth_routes.route("/refresh", methods=["POST"])
-@jwt_required(refresh=True)
-@swag_from("../swagger/auth/auth_refresh.yaml")
-def refresh():
-    return refresh_token()
-

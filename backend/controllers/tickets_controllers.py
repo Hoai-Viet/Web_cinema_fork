@@ -1,5 +1,5 @@
 from flask import jsonify
-from models import db, Ticket, User, Seat, Showtime, Payment, TicketType
+from models import db, Ticket, User, Seat, Showtime, Payment, TicketType, SnackCombo
 from sqlalchemy.orm import joinedload
 
 
@@ -79,59 +79,68 @@ def get_tickets_by_user(user_id):
 # CREATE TICKET — ĐẶT VÉ MỚI
 # ============================================================================
 def create_ticket(data):
-    required = ("user_id", "showtime_id", "seat_id", "ticket_type_id")
-    if not data or not all(k in data for k in required):
-        return jsonify({"message": "Missing required fields"}), 400
+    payment_id = data.get("payment_id")
+    user_id = data.get("user_id")
+    showtime_id = data.get("showtime_id")
+    tickets = data.get("tickets", [])  # list các ticket: seat_id, ticket_type_id, snack_id
 
-    user = User.query.get(data["user_id"])
-    showtime = Showtime.query.get(data["showtime_id"])
-    seat = Seat.query.get(data["seat_id"])
-    ticket_type = TicketType.query.get(data["ticket_type_id"])
-    payment_id = data.get("payment_id")  # <-- thêm payment_id tùy chọn
+    required_fields = ["payment_id", "user_id", "showtime_id"]
 
-    if not user: 
-        return jsonify({"message": "User not found"}), 404
-    if not showtime: 
-        return jsonify({"message": "Showtime not found"}), 404
-    if not seat: 
-        return jsonify({"message": "Seat not found"}), 404
-    if not ticket_type: 
-        return jsonify({"message": "Ticket type not found"}), 404
+    missing = [f for f in required_fields if f not in data or data[f] is None]
+    if missing:
+        return jsonify({
+            "message": "Missing required fields",
+            "missing_fields": missing
+        }), 400
 
-    # Ghế phải thuộc đúng phòng chiếu
-    if seat.room_id != showtime.room_id:
-        return jsonify({"message": "Seat does not belong to this showtime's room"}), 400
+    created_ids = []
 
-    # Ghế đã đặt ?
-    exists = Ticket.query.filter_by(showtime_id=showtime.id, seat_id=seat.id).first()
-    if exists:
-        return jsonify({"message": "Seat already booked"}), 409
+    try:
+        for t in tickets:
+            required = ("seat_id", "ticket_type_id")
+            if not all(k in t for k in required):
+                return jsonify({"message": "Invalid ticket structure"}), 400
 
-    # ===== TÍNH GIÁ VÉ =====
-    final_price = ticket_type.base_price
-    # Có thể + thêm phụ phí theo seat_type nếu muốn
+            seat = Seat.query.get(t["seat_id"])
+            if not seat:
+                return jsonify({"message": f"Seat {t['seat_id']} not found"}), 404
 
-    new_ticket = Ticket(
-        user_id=user.id,
-        showtime_id=showtime.id,
-        seat_id=seat.id,
-        ticket_type_id=ticket_type.id,
-        price=final_price,
-        quantity=1,
-        payment_id=payment_id  # <-- gán payment_id nếu có
-    )
+            exists = Ticket.query.filter_by(showtime_id=showtime_id, seat_id=t["seat_id"]).first()
+            if exists:
+                return jsonify({"message": f"Seat {seat.seat_number} already booked"}), 409
 
-    db.session.add(new_ticket)
-    db.session.commit()
+            ticket_type = TicketType.query.get(t["ticket_type_id"])
 
-    return jsonify({
-        "message": "Ticket booked successfully",
-        "ticket_id": new_ticket.id,
-        "price": final_price,
-        "payment_id": new_ticket.payment_id  # trả luôn payment_id nếu có
-    }), 201
+            snack = None
+            if t.get("snack_id"):
+                snack = SnackCombo.query.get(t["snack_id"])
+                if not snack:
+                    return jsonify({"message": "Snack combo not found"}), 404
 
+            new_ticket = Ticket(
+                user_id=user_id,
+                showtime_id=showtime_id,
+                seat_id=t["seat_id"],
+                ticket_type_id=t["ticket_type_id"],
+                payment_id=payment_id,
+                snack_id=snack.id if snack else None
+            )
 
+            db.session.add(new_ticket)
+            db.session.flush()
+
+            created_ids.append(new_ticket.id)
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Tickets created successfully",
+            "ticket_ids": created_ids
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 # ============================================================================
 # UPDATE TICKET — chỉ khi chưa thanh toán

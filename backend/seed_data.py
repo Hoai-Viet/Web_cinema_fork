@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from app import create_app
 from models import (
     db, City, Cinema, Room, Movie, Seat, Showtime, SnackCombo,
-    User, TicketType, generate_uuid
+    User, TicketType, generate_uuid, ShowtimeTicketType
 )
 
 app = create_app()
@@ -168,7 +168,7 @@ def seed_from_json():
             id=generate_uuid(),
             username="demo_user",
             email="demo@example.com",
-            password="hashed_demo_password"   # bạn tự hash lại nhé
+            password="hashed_demo_password" 
         )
         db.session.add(user)
         db.session.commit()
@@ -202,6 +202,31 @@ def seed_from_json():
             )
         ]
         db.session.bulk_save_objects(ticket_types)
+        db.session.commit()
+
+    # ======================================================
+    # Seed Showtime_TicketType
+    # ======================================================
+    if ShowtimeTicketType.query.count() == 0:
+        print("🔗  Linking Showtime ↔ TicketType ...")
+
+        showtimes = Showtime.query.all()
+        ticket_types = TicketType.query.all()
+
+        mappings = []
+
+        for st in showtimes:
+            # Ví dụ: suất chiếu nào cũng có đủ các loại vé
+            for tt in ticket_types:
+                mappings.append(
+                    ShowtimeTicketType(
+                        id=generate_uuid(),
+                        showtime_id=st.id,
+                        ticket_type_id=tt.id
+                    )
+                )
+
+        db.session.bulk_save_objects(mappings)
         db.session.commit()
 
     print("\n✅ Seeding completed successfully!\n")

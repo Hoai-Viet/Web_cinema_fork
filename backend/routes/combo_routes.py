@@ -13,7 +13,7 @@ combo_routes = Blueprint("combo_routes", __name__, url_prefix="/api")
 
 
 # ==================== COMBO ROUTES ====================
-
+# 14
 @combo_routes.route("/", methods=["GET"])
 @swag_from("../swagger/combo/get_all_combos.yaml")
 def route_get_all_combos():
@@ -21,31 +21,31 @@ def route_get_all_combos():
     return get_all_combos()
 
 
-@combo_routes.route("/combos/<combo_id>", methods=["GET"])
-@swag_from("../swagger/combo/get_combo_by_id.yaml")
-def route_get_combo_by_id(combo_id):
-    """Lấy chi tiết 1 combo theo ID"""
-    return get_combo_by_id(combo_id)
+# @combo_routes.route("/combos/<combo_id>", methods=["GET"])
+# @swag_from("../swagger/combo/get_combo_by_id.yaml")
+# def route_get_combo_by_id(combo_id):
+#     """Lấy chi tiết 1 combo theo ID"""
+#     return get_combo_by_id(combo_id)
 
 
-# ==================== TICKET + COMBO ROUTES ====================
+# # ==================== TICKET + COMBO ROUTES ====================
 
-@combo_routes.route("/combos", methods=["POST"])
-@swag_from("../swagger/combo/add_combo_to_ticket.yaml")
-def route_add_combo_to_ticket():
-    """Thêm combo vào vé kèm số lượng"""
-    return add_combo_to_ticket()
-
-
-@combo_routes.route("/<ticket_id>/combos", methods=["GET"])
-@swag_from("../swagger/combo/get_combos_in_ticket.yaml")
-def route_get_combos_in_ticket(ticket_id):
-    """Lấy danh sách combo đã chọn trong 1 vé"""
-    return get_combos_in_ticket(ticket_id)
+# @combo_routes.route("/combos", methods=["POST"])
+# @swag_from("../swagger/combo/add_combo_to_ticket.yaml")
+# def route_add_combo_to_ticket():
+#     """Thêm combo vào vé kèm số lượng"""
+#     return add_combo_to_ticket()
 
 
-@combo_routes.route("/<ticket_id>/combos/<combo_id>", methods=["DELETE"])
-@swag_from("../swagger/combo/remove_combo_from_ticket.yaml")
-def route_remove_combo_from_ticket(ticket_id, combo_id):
-    """Xóa 1 combo khỏi vé"""
-    return remove_combo_from_ticket(ticket_id, combo_id)
+# @combo_routes.route("/<ticket_id>/combos", methods=["GET"])
+# @swag_from("../swagger/combo/get_combos_in_ticket.yaml")
+# def route_get_combos_in_ticket(ticket_id):
+#     """Lấy danh sách combo đã chọn trong 1 vé"""
+#     return get_combos_in_ticket(ticket_id)
+
+
+# @combo_routes.route("/<ticket_id>/combos/<combo_id>", methods=["DELETE"])
+# @swag_from("../swagger/combo/remove_combo_from_ticket.yaml")
+# def route_remove_combo_from_ticket(ticket_id, combo_id):
+#     """Xóa 1 combo khỏi vé"""
+#     return remove_combo_from_ticket(ticket_id, combo_id)

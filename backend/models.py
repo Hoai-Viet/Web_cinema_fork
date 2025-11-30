@@ -71,8 +71,7 @@ class Seat(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     room_id = db.Column(db.String(36), db.ForeignKey("rooms.id"), nullable=False, index=True)
     seat_number = db.Column(db.String(10), nullable=False)
-    seat_type = db.Column(
-        db.Enum('Standard', 'VIP', 'Sweetbox', name='seat_types'),
+    seat_type = db.Column(db.Enum('Standard', 'VIP', 'Sweetbox', name='seat_types'),
         nullable=False
     )
 
@@ -139,11 +138,7 @@ class Ticket(db.Model):
     showtime_id = db.Column(db.String(36), db.ForeignKey("showtimes.id"), nullable=False, index=True)
     seat_id = db.Column(db.String(36), db.ForeignKey("seats.id"), nullable=False, index=True)
     ticket_type_id = db.Column(db.String(36), db.ForeignKey("ticket_types.id"), nullable=False, index=True)
-    price = db.Column(db.Float, nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=1)
-    booked_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    # New: one snack combo per ticket
     snack_id = db.Column(db.String(36), db.ForeignKey("snack_combos.id"), nullable=True)
     snack = db.relationship("SnackCombo", back_populates="tickets")
 
@@ -190,19 +185,31 @@ class Payment(db.Model):
 
     tickets = db.relationship("Ticket", back_populates="payment", lazy=True)
 
+class ShowtimeTicketType(db.Model):
+    __tablename__ = "showtime_ticket_types"
 
-
-
-class Promotion(db.Model):
-    __tablename__ = "promotions"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    title = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text)
-    discount_percent = db.Column(db.Float, nullable=False)
-    start_date = db.Column(db.DateTime, nullable=False)
-    end_date = db.Column(db.DateTime, nullable=False)
-    image_url = db.Column(db.Text)
+
+    showtime_id = db.Column(
+        db.String(36),
+        db.ForeignKey("showtimes.id"),
+        nullable=False,
+        index=True
+    )
+
+    ticket_type_id = db.Column(
+        db.String(36),
+        db.ForeignKey("ticket_types.id"),
+        nullable=False,
+        index=True
+    )
+
+    # Nếu bạn muốn optional thêm giá riêng cho từng suất → thêm cột này
+    # price = db.Column(db.Float, nullable=True)
+
+    showtime = db.relationship("Showtime", backref="showtime_ticket_types", lazy=True)
+    ticket_type = db.relationship("TicketType", backref="showtime_ticket_types", lazy=True)
 
     __table_args__ = (
-        db.CheckConstraint('discount_percent >= 0 AND discount_percent <= 100', name='check_discount_range'),
+        db.UniqueConstraint("showtime_id", "ticket_type_id", name="uix_showtime_tickettype"),
     )

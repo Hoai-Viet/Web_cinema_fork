@@ -1,83 +1,120 @@
 tags:
   - Tickets
-summary: Create New Ticket
-description: >
-  Book a new ticket by providing user ID, showtime ID, seat ID, price, and quantity.  
-  Each ticket is linked to a specific showtime and seat.
+
+summary: Create multiple tickets for a user
+description: |
+  This endpoint allows creating multiple tickets in one request.  
+  Each ticket requires `seat_id` and `ticket_type_id`.  
+  Optionally, a snack combo (`snack_id`) can be included.
+
 consumes:
   - application/json
 produces:
   - application/json
 
-requestBody:
-  required: true
-  content:
-    application/json:
-      schema:
-        type: object
-        properties:
-          user_id:
-            type: string
-            description: ID of the user booking the ticket
-            example: "b7a15df0-9e0f-4f14-9ff1-032fa11c315a"
-          showtime_id:
-            type: string
-            description: ID of the showtime
-            example: "a95d1b72-c11f-4c6b-94db-5f2e210fa4d3"
-          seat_id:
-            type: string
-            description: ID of the seat
-            example: "c5e2f0f6-19f1-46cf-a97c-9fa1e7b2c9d4"
-          price:
-            type: number
-            description: Price of one ticket
-            example: 95000
-          quantity:
-            type: integer
-            description: Number of tickets to book (default = 1)
-            example: 2
-        required:
-          - user_id
-          - showtime_id
-          - seat_id
-          - price
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: Ticket creation payload
+    schema:
+      type: object
+      required:
+        - payment_id
+        - user_id
+        - showtime_id
+        - tickets
+      properties:
+        payment_id:
+          type: string
+          description: ID of the associated payment
+          example: "c1f23c1a-5df2-41f9-b831-998cd6c3c111"
+        user_id:
+          type: string
+          description: ID of the user buying the tickets
+          example: "b02a89df-627b-4725-b96a-c28d6097e7ff"
+        showtime_id:
+          type: string
+          description: ID of the showtime
+          example: "7fd26f23-08bb-4ef8-873f-4b52ae93f25a"
+        tickets:
+          type: array
+          description: List of tickets to create
+          items:
+            type: object
+            required:
+              - seat_id
+              - ticket_type_id
+            properties:
+              seat_id:
+                type: string
+                description: ID of the seat
+                example: "a11c9b8e-23f5-4ff4-81d9-65a7ffa0cbae"
+              ticket_type_id:
+                type: string
+                description: ID of the ticket type
+                example: "29b1b61f-6d93-42a8-bad8-fb0dc1e40917"
+              snack_id:
+                type: string
+                nullable: true
+                description: Optional snack combo ID
+                example: "f19d2573-8fb7-4d92-8848-8de6a0bfe21a"
 
 responses:
   201:
-    description: Ticket booked successfully
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: "Ticket booked successfully"
-            ticket_id:
-              type: string
-              example: "fbcba0f9-2a7b-49f4-bf0c-7f2d172e9b9d"
-            quantity:
-              type: integer
-              example: 2
+    description: Tickets created successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Tickets created successfully"
+        ticket_ids:
+          type: array
+          items:
+            type: string
+          example:
+            - "03e8e5f4-b582-4f52-9171-e2bb3d241a22"
+            - "a963v0a2-b582-4f52-9171-e2bb3d327f93"
 
   400:
-    description: Missing or invalid fields / seat already booked
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: "Seat already booked for this showtime"
+    description: Missing required fields or invalid ticket structure
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Missing required fields"
+        missing_fields:
+          type: array
+          items:
+            type: string
+          example:
+            - "payment_id"
 
   404:
-    description: User, Seat, or Showtime not found
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: "User not found"
+    description: Seat or snack not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seat A1 not found"
+
+  409:
+    description: Seat already booked
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seat A1 already booked"
+
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unexpected error occurred"
