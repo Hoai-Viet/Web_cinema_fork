@@ -1,0 +1,44 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+get:
+  tags:
+    - Showtime
+  summary: Get available seats for a showtime
+  parameters:
+    - name: showtime_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 7
+  responses:
+    200:
+      description: List of available seats
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 101
+                seat_number:
+                  type: string
+                  example: A5
+                seat_type:
+                  type: string
+                  example: VIP
+                is_available:
+                  type: boolean
+                  example: true
+    404:
+      description: Showtime not found

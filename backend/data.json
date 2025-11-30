@@ -1,0 +1,227 @@
+{
+  "cities": [
+    { "name": "Hanoi" },
+    { "name": "Ho Chi Minh City" },
+    { "name": "Da Nang" },
+    { "name": "Hai Phong" },
+    { "name": "Can Tho" }
+  ],
+
+  "cinemas": [
+    {
+      "name": "CGV Vincom Hanoi",
+      "address": "5th Floor, Vincom Center, 191 Ba Trieu, Hanoi",
+      "phone": "024 7300 8888",
+      "city": "Hanoi"
+    },
+    {
+      "name": "Lotte Cinema Landmark 81",
+      "address": "B1 Landmark 81, 720A Dien Bien Phu, Ho Chi Minh",
+      "phone": "028 3636 9999",
+      "city": "Ho Chi Minh City"
+    },
+    {
+      "name": "Galaxy Da Nang",
+      "address": "255 Nguyen Van Linh, Da Nang",
+      "phone": "0236 730 8888",
+      "city": "Da Nang"
+    },
+    {
+      "name": "CGV Can Tho",
+      "address": "3rd Floor, Vincom Xuan Khanh, Can Tho",
+      "phone": "0292 7300 222",
+      "city": "Can Tho"
+    },
+    {
+      "name": "Beta Hai Phong",
+      "address": "4th Floor, AEON Mall Hai Phong",
+      "phone": "0225 123 4567",
+      "city": "Hai Phong"
+    }
+  ],
+
+  "rooms": [
+    { "cinema": "CGV Vincom Hanoi", "name": "Room 1", "total_seats": 120, "room_type": "2D" },
+    { "cinema": "CGV Vincom Hanoi", "name": "Room 2 IMAX", "total_seats": 80, "room_type": "IMAX" },
+    { "cinema": "Lotte Cinema Landmark 81", "name": "VIP Room", "total_seats": 40, "room_type": "3D" },
+    { "cinema": "CGV Can Tho", "name": "Room 3", "total_seats": 100, "room_type": "2D" },
+    { "cinema": "Beta Hai Phong", "name": "Beta Room 1", "total_seats": 70, "room_type": "2D" }
+  ],
+
+  "movies": [
+    {
+      "title": "Get a wife for your father",
+      "description": "In a small village in the West, Mr. Sau Seu lives alone in a karaoke cafe, hoping that his son Ut Tung will come back from Saigon to visit him. When he discovers that he has a serious illness, he decides to to fulfill his promise to his late wife. But that plan fails when he discovers that Tung has a shocking secret and is hiding it. Amidst conflicts, misunderstandings and attempts to reconcile, father and son gradually learn to understand each other, and each finds happiness and peace in their own marriage.",
+      "genre": "comedy, family",
+      "duration_minutes": 169,
+      "movie_content": "https://example.com/interstellar",
+      "poster_url": "https://cinestar.com.vn/_next/image/?url=https%3A%2F%2Fapi-website.cinestar.com.vn%2Fmedia%2Fwysiwyg%2FPosters%2F11-2025%2Fcuoi-vo-cho-cha-poster.png&w=1920&q=75",
+      "country": "USA",
+      "age_rating": "12+",
+      "language": "English - Vietnamese subtitles",
+      "status": "Now Showing"
+    },
+    {
+      "title": "Spider-Man: No Way Home",
+      "description": "Peter Parker faces the multiverse as villains from other worlds appear.",
+      "genre": "Action, Superhero",
+      "duration_minutes": 148,
+      "movie_content": "https://example.com/no-way-home",
+      "poster_url": "https://image.tmdb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
+      "country": "USA",
+      "age_rating": "12+",
+      "language": "English - Vietnamese subtitles",
+      "status": "Now Showing"
+    },
+    {
+      "title": "The Batman",
+      "description": "Bruce Wayne investigates a series of mysterious crimes in Gotham.",
+      "genre": "Action, Crime",
+      "duration_minutes": 175,
+      "movie_content": "https://example.com/the-batman",
+      "poster_url": "https://image.tmdb.org/t/p/original/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+      "country": "USA",
+      "age_rating": "12+",
+      "language": "English - Vietnamese subtitles",
+      "status": "Now Showing"
+    },
+    {
+      "title": "Oppenheimer",
+      "description": "The life and career of J. Robert Oppenheimer, the father of the atomic bomb.",
+      "genre": "Biography, Drama",
+      "duration_minutes": 180,
+      "movie_content": "https://example.com/oppenheimer",
+      "poster_url": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fvi.wikipedia.org%2Fwiki%2FOppenheimer_%2528phim%2529&psig=AOvVaw1-shFfCYZ5gHJ8zwggszuT&ust=1763559590401000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCOja78_p-5ADFQAAAAAdAAAAABAE",
+      "country": "USA",
+      "age_rating": "18+",
+      "language": "English - Vietnamese subtitles",
+      "status": "Coming Soon"
+    },
+    {
+      "title": "Demon Slayer: Infinity Train",
+      "description": "Tanjiro and his team battle demons aboard the Infinity Train.",
+      "genre": "Animation, Action",
+      "duration_minutes": 117,
+      "movie_content": "https://example.com/demonslayer",
+      "poster_url": "https://image.tmdb.org/t/p/original/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg",
+      "country": "Japan",
+      "age_rating": "16+",
+      "language": "Japanese - Vietnamese subtitles",
+      "status": "Now Showing"
+    },
+    {
+      "title": "Suzume",
+      "description": "A young girl accidentally opens a disaster door and must close it before chaos spreads.",
+      "genre": "Animation, Adventure",
+      "duration_minutes": 122,
+      "movie_content": "https://example.com/suzume",
+      "poster_url": "https://image.tmdb.org/t/p/original/vIeu8WysZrTSFb2uhPViKjX9EcC.jpg",
+      "country": "Japan",
+      "age_rating": "16+",
+      "language": "Japanese - Vietnamese subtitles",
+      "status": "Coming Soon"
+    }
+  ],
+
+  "showtimes": [
+    {
+      "movie": "Cưới vợ cho cha",
+      "room": "Room 1",
+      "start_time": "2025-11-13T18:00:00",
+      "end_time": "2025-11-13T20:50:00"
+    },
+    {
+      "movie": "Cưới vợ cho cha",
+      "room": "Room 2 IMAX",
+      "start_time": "2025-11-13T21:00:00",
+      "end_time": "2025-11-13T23:50:00"
+    },
+    {
+      "movie": "Cưới vợ cho cha",
+      "room": "Room 1",
+      "start_time": "2025-11-14T14:00:00",
+      "end_time": "2025-11-14T16:50:00"
+    },
+    {
+      "movie": "Spider-Man: No Way Home",
+      "room": "Room 2 IMAX",
+      "start_time": "2025-11-14T19:00:00",
+      "end_time": "2025-11-14T21:28:00"
+    },
+    {
+      "movie": "Spider-Man: No Way Home",
+      "room": "Room 1",
+      "start_time": "2025-11-15T15:00:00",
+      "end_time": "2025-11-15T17:28:00"
+    },
+    {
+      "movie": "The Batman",
+      "room": "Room 3",
+      "start_time": "2025-11-16T20:00:00",
+      "end_time": "2025-11-16T22:55:00"
+    },
+    {
+      "movie": "The Batman",
+      "room": "Room 2 IMAX",
+      "start_time": "2025-11-17T18:00:00",
+      "end_time": "2025-11-17T20:55:00"
+    },
+    {
+      "movie": "Oppenheimer",
+      "room": "Room 1",
+      "start_time": "2025-11-17T18:00:00",
+      "end_time": "2025-11-17T21:00:00"
+    },
+    {
+      "movie": "Oppenheimer",
+      "room": "Room 3",
+      "start_time": "2025-11-18T16:00:00",
+      "end_time": "2025-11-18T19:00:00"
+    },
+    {
+      "movie": "Demon Slayer: Infinity Train",
+      "room": "Beta Room 1",
+      "start_time": "2025-11-18T15:00:00",
+      "end_time": "2025-11-18T16:57:00"
+    },
+    {
+      "movie": "Demon Slayer: Infinity Train",
+      "room": "Beta Room 1",
+      "start_time": "2025-11-18T17:30:00",
+      "end_time": "2025-11-18T19:27:00"
+    },
+    {
+      "movie": "Suzume",
+      "room": "VIP Room",
+      "start_time": "2025-11-19T14:30:00",
+      "end_time": "2025-11-19T16:32:00"
+    },
+    {
+      "movie": "Suzume",
+      "room": "VIP Room",
+      "start_time": "2025-11-19T17:00:00",
+      "end_time": "2025-11-19T19:02:00"
+    }
+  ],
+
+  "snack_combos": [
+    {
+      "name": "Combo 1: Popcorn + Soft Drink",
+      "description": "1 large popcorn + 1 soft drinks",
+      "price": 119000,
+      "image_url": "https://api-website.cinestar.com.vn/media/.thumbswysiwyg/pictures/PICCONNEW/CNS035_COMBO_GAU.png?rand=1723084117"
+    },
+    {
+      "name": "VIP Combo",
+      "description": "1 large popcorn + 2 soft drinks",
+      "price": 249000,
+      "image_url": "https://api-website.cinestar.com.vn/media/.thumbswysiwyg/pictures/PICCONNEW/CNS036_COMBO_CO_GAU.png?rand=1723084117"
+    },
+    {
+      "name": "Super XL Combo",
+      "description": "2 large popcorn + 4 drinks",
+      "price": 299000,
+      "image_url": "https://api-website.cinestar.com.vn/media/.thumbswysiwyg/pictures/PICCONNEW/CNS037_COMBO_NHA_GAU.png?rand=1723084117"
+    }
+  ]
+}

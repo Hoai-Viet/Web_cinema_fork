@@ -1,0 +1,16 @@
+tags:
+  - Authentication
+summary: Logout User
+description: Logout by discarding JWT token on client side.
+produces:
+  - application/json
+
+responses:
+  200:
+    description: Logout successful
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Logout successful (client should discard JWT)

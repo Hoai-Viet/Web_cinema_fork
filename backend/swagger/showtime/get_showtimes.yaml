@@ -1,0 +1,36 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+get:
+  tags:
+    - Showtime
+  summary: Get all showtimes
+  description: Retrieve the full list of all showtimes in the system.
+  responses:
+    200:
+      description: List of showtimes
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                movie_id:
+                  type: integer
+                  example: 2
+                room_id:
+                  type: integer
+                  example: 3
+                start_time:
+                  type: string
+                  example: "2025-11-03T14:00:00"

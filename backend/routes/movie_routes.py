@@ -1,39 +1,28 @@
-from flask import Blueprint, jsonify
-from models import db, Movie
+from flask import Blueprint
+from flask_jwt_extended import jwt_required
+from flasgger import swag_from
+from controllers.movie_controllers import (
+    get_movies,
+    get_movie,
+    create_movie,
+    update_movie,
+    delete_movie
+)
 
 movie_routes = Blueprint("movie_routes", __name__)
-
-# Lấy danh sách phim
+# 7
+# 🟢 Lấy danh sách tất cả phim
 @movie_routes.route("/movies", methods=["GET"])
-def get_movies():
-    movies = Movie.query.all()
-    result = []
-    for movie in movies:
-        result.append({
-            "id": movie.id,
-            "title": movie.title,
-            "description": movie.description,
-            "duration_minutes": movie.duration_minutes,
-            "genre": movie.genre,
-            "release_date": movie.release_date.isoformat() if movie.release_date else None,
-            "poster_url": movie.poster_url
-        })
-    return jsonify(result)
+# @jwt_required()
+@swag_from("../swagger/movie/get_movies.yaml", methods=["GET"])
+def get_all_movies():
+    return get_movies()
 
-# Lấy chi tiết phim theo id
-@movie_routes.route("/movies/<movie_id>", methods=["GET"])
-def get_movie(movie_id):
-    movie = Movie.query.get(movie_id)
-    if not movie:
-        return jsonify({"message": "Movie not found"}), 404
 
-    result = {
-        "id": movie.id,
-        "title": movie.title,
-        "description": movie.description,
-        "duration_minutes": movie.duration_minutes,
-        "genre": movie.genre,
-        "release_date": movie.release_date.isoformat() if movie.release_date else None,
-        "poster_url": movie.poster_url
-    }
-    return jsonify(result)
+# 8
+# 🟢 Lấy chi tiết phim theo ID
+@movie_routes.route("/movies/<string:movie_id>", methods=["GET"])
+# @jwt_required()
+@swag_from("../swagger/movie/get_movie.yaml", methods=["GET"])
+def get_movie_detail(movie_id):
+    return get_movie(movie_id)

@@ -1,0 +1,25 @@
+tags:
+  - Ticket Types
+summary: Delete ticket type
+description: Remove a ticket type by its ID
+produces:
+  - application/json
+
+parameters:
+  - name: ticket_type_id
+    in: path
+    required: true
+    type: string
+
+responses:
+  200:
+    description: Ticket type deleted
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ticket type deleted successfully
+
+  404:
+    description: Ticket type not found

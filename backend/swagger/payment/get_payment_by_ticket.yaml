@@ -1,0 +1,32 @@
+tags:
+  - Payment
+summary: Lấy thông tin thanh toán bằng ticket_id
+parameters:
+  - name: ticket_id
+    in: path
+    required: true
+    schema:
+      type: string
+responses:
+  200:
+    description: Payment info returned successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            payment_id:
+              type: string
+            ticket_id:
+              type: string
+            amount:
+              type: number
+            payment_method:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              example: "2025-01-20 14:25:00"
+  404:
+    description: Payment not found

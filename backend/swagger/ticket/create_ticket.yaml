@@ -1,0 +1,120 @@
+tags:
+  - Tickets
+
+summary: Create multiple tickets for a user
+description: |
+  This endpoint allows creating multiple tickets in one request.  
+  Each ticket requires `seat_id` and `ticket_type_id`.  
+  Optionally, a snack combo (`snack_id`) can be included.
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - name: body
+    in: body
+    required: true
+    description: Ticket creation payload
+    schema:
+      type: object
+      required:
+        - payment_id
+        - user_id
+        - showtime_id
+        - tickets
+      properties:
+        payment_id:
+          type: string
+          description: ID of the associated payment
+          example: "c1f23c1a-5df2-41f9-b831-998cd6c3c111"
+        user_id:
+          type: string
+          description: ID of the user buying the tickets
+          example: "b02a89df-627b-4725-b96a-c28d6097e7ff"
+        showtime_id:
+          type: string
+          description: ID of the showtime
+          example: "7fd26f23-08bb-4ef8-873f-4b52ae93f25a"
+        tickets:
+          type: array
+          description: List of tickets to create
+          items:
+            type: object
+            required:
+              - seat_id
+              - ticket_type_id
+            properties:
+              seat_id:
+                type: string
+                description: ID of the seat
+                example: "a11c9b8e-23f5-4ff4-81d9-65a7ffa0cbae"
+              ticket_type_id:
+                type: string
+                description: ID of the ticket type
+                example: "29b1b61f-6d93-42a8-bad8-fb0dc1e40917"
+              snack_id:
+                type: string
+                nullable: true
+                description: Optional snack combo ID
+                example: "f19d2573-8fb7-4d92-8848-8de6a0bfe21a"
+
+responses:
+  201:
+    description: Tickets created successfully
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Tickets created successfully"
+        ticket_ids:
+          type: array
+          items:
+            type: string
+          example:
+            - "03e8e5f4-b582-4f52-9171-e2bb3d241a22"
+            - "a963v0a2-b582-4f52-9171-e2bb3d327f93"
+
+  400:
+    description: Missing required fields or invalid ticket structure
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Missing required fields"
+        missing_fields:
+          type: array
+          items:
+            type: string
+          example:
+            - "payment_id"
+
+  404:
+    description: Seat or snack not found
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seat A1 not found"
+
+  409:
+    description: Seat already booked
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seat A1 already booked"
+
+  500:
+    description: Internal server error
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unexpected error occurred"

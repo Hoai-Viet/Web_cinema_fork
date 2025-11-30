@@ -1,0 +1,50 @@
+tags:
+  - Cinema
+summary: Create new cinema
+description: Create a new cinema
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: CGV Vincom Landmark 81
+        address:
+          type: string
+          example: 208 Nguyễn Hữu Cảnh, Bình Thạnh, TP.HCM
+        phone:
+          type: string
+          example: "02898765432"
+      required:
+        - name
+        - address
+
+responses:
+  201:
+    description: Cinema created
+    schema:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5"
+        message:
+          type: string
+          example: Cinema created successfully
+
+  400:
+    description: Missing required fields
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Missing required fields

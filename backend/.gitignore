@@ -1,0 +1,69 @@
+# -------------------------------
+# 🐍 Python
+# -------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+*.cover
+.cache
+.pytest_cache/
+
+# -------------------------------
+# ⚙️ Flask / Database
+# -------------------------------
+instance/
+*.db
+*.sqlite3
+*.sqlite
+app.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# -------------------------------
+# 🧰 IDE / Editor
+# -------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# -------------------------------
+# 🪣 System / OS
+# -------------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------------
+# 🚀 Others
+# -------------------------------
+# Local data and seed files
+# data.json
+# seed_data.py
+
+# Log files
+*.log
+logs/
+
+# Backup files
+*.bak
+*.tmp

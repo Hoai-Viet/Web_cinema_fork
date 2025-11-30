@@ -1,0 +1,38 @@
+tags:
+  - Payment
+summary: Cập nhật trạng thái thanh toán
+description: Chỉ dành cho server hoặc admin xử lý trạng thái thanh toán
+parameters:
+  - name: payment_id
+    in: path
+    required: true
+    schema:
+      type: string
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - status
+        properties:
+          status:
+            type: string
+            enum: [Pending, Completed, Failed]
+            example: Completed
+responses:
+  200:
+    description: Payment status updated
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Payment updated to Completed
+  400:
+    description: Invalid status
+  404:
+    description: Payment not found

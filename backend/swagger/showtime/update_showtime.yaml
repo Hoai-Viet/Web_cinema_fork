@@ -1,0 +1,49 @@
+tags:
+  - Showtime
+summary: Create New Ticket
+description: Book a new ticket by providing user ID, showtime, seat, and price.
+consumes:
+  - application/json
+produces:
+  - application/json
+
+put:
+  tags:
+    - Showtime
+  summary: Update showtime details
+  parameters:
+    - name: showtime_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 5
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            movie_id:
+              type: integer
+              example: 2
+            room_id:
+              type: integer
+              example: 4
+            start_time:
+              type: string
+              example: "2025-11-05T19:30:00"
+  responses:
+    200:
+      description: Showtime updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Showtime updated successfully
+    404:
+      description: Showtime or movie/room not found

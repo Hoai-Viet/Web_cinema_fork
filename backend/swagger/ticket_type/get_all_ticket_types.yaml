@@ -1,0 +1,30 @@
+tags:
+  - Ticket Types
+summary: Get all ticket types
+description: Retrieve a list of all available ticket types
+produces:
+  - application/json
+
+responses:
+  200:
+    description: List of ticket types
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: "c8e302cd-2367-4cc9-a63f-9d3d1c218df9"
+          name:
+            type: string
+            example: "Standard"
+          description:
+            type: string
+            example: "Standard seat ticket"
+          base_price:
+            type: number
+            example: 80000
+          room_type:
+            type: string
+            example: "2D"

@@ -1,41 +1,37 @@
-from flask import Blueprint, request, jsonify,session
-from models import db, User
+from flask import Blueprint, request
+from controllers.auth_controllers import (
+    signup_user,
+    login_user,
+    logout_user,
+    forgot_password,
+    refresh_token
+)
+from flask_jwt_extended import jwt_required
+from flasgger import swag_from
+import os
 
 auth_routes = Blueprint("auth_routes", __name__)
 
-# Đăng ký
 @auth_routes.route("/signup", methods=["POST"])
+@swag_from("../swagger/auth/auth_signup.yaml")
 def signup():
     data = request.get_json()
-    if not data or not all(k in data for k in ("username", "email", "password")):
-        return jsonify({"message": "Missing required fields"}), 400
+    return signup_user(data)
 
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"message": "Email already exists"}), 400
-
-    user = User(
-        username=data["username"],
-        email=data["email"],
-        password=data["password"]
-    )
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({"message": "User created", "id": user.id}), 201
-
-
-# Đăng nhập
 @auth_routes.route("/login", methods=["POST"])
+@swag_from("../swagger/auth/auth_login.yaml")
 def login():
     data = request.get_json()
-    if not data or not all(k in data for k in ("email", "password")):
-        return jsonify({"message": "Missing email or password"}), 400
+    return login_user(data)
 
-    user = User.query.filter_by(email=data["email"]).first()
-    if user and user.password == data["password"]:
-        return jsonify({"message": "Login successful", "user_id": user.id})
-    return jsonify({"message": "Invalid credentials"}), 401
+# @auth_routes.route("/forgot-password", methods=["POST"])
+# @swag_from("../swagger/auth/auth_forgot_password.yaml")
+# def forgot():
+#     data = request.get_json()
+#     return forgot_password(data)
 
 @auth_routes.route("/logout", methods=["POST"])
+@jwt_required()
+@swag_from("../swagger/auth/auth_logout.yaml")
 def logout():
-    session.pop("user_id", None)
-    return jsonify({"message": "Logout successful"})
+    return logout_user()

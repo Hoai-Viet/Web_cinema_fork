@@ -1,0 +1,38 @@
+tags:
+  - Cinema
+summary: Get cinema by ID
+description: Retrieve a cinema by its ID
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: cinema_id
+    required: true
+    type: string
+    description: Cinema ID
+    example: "1"
+
+responses:
+  200:
+    description: Cinema found
+    schema:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+
+  404:
+    description: Cinema not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Cinema not found
