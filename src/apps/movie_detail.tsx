@@ -5,7 +5,7 @@ import MovieTheater from "../components/MovieTheater";
 import MovieSeat from "../components/MovieSeat";
 import MovieTickets from "../components/MovieTicket";
 import MovieCombo from "../components/MovieCombo";
-import PaymentBar from "../components/Payment";
+import PaymentBar from "../components/PaymentBar";
 import { useNavigate } from "react-router-dom";
 
 export default function MovieDetail() {

@@ -135,7 +135,7 @@ export default function Checkout() {
         return;
       }
 
-      alert("Payment successful! Tickets created.");
+      alert("Tickets created successfully");
 
       navigate("/", {
         state: {

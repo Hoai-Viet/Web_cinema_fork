@@ -27,8 +27,10 @@ export default function PaymentBar({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(false);
+    const timer = setTimeout(() => setMounted(true), 10);
+    return () => clearTimeout(timer);
+  }, [selectedTickets, selectedCombos]);
 
   useEffect(() => {
     const sum =
