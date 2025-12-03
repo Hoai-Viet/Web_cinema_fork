@@ -81,7 +81,7 @@ export default function MovieShowTime({
         <div className="w-full max-w-4xl space-y-4 text-white">
           {Object.keys(groupedByDate).map((date) => {
             const day = getDayOfWeek(date);
-            const [yyyy, mm, dd] = date.split("-");
+            const [mm, dd] = date.split("-");
             return (
               <div key={date} className="flex items-center gap-4 justify-start">
                 {/* Ô ngày */}

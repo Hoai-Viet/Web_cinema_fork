@@ -5,7 +5,6 @@ import AuthForm from "./components/AuthForm";
 import Forgotpassword from "./components/Forgotpassword";
 import Home from "./apps/home";
 import MovieDetail from "./apps/movie_detail";
-import ProfilePage from "./apps/profile";
 import Checkout from "./apps/checkout";
 
 function App() {
