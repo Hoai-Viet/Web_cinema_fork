@@ -77,7 +77,7 @@ export default function MovieDetail() {
       {/* TICKET TYPES */}
       <MovieTickets
         showtimeId={selectedShowtimeId}
-        onChangeTotal={(total, list) => setSelectedTickets(list)}
+        onChangeTotal={(_, list) => setSelectedTickets(list)}
       />
 
       {/* SEATS */}
@@ -94,7 +94,7 @@ export default function MovieDetail() {
       {/* COMBOS */}
       <MovieCombo
         totalTicketQty={totalTicketQty}
-        onChangeComboTotal={(total, list) => setSelectedCombos(list)}
+        onChangeComboTotal={(_, list) => setSelectedCombos(list)}
         onLoaded={() => {}}
       />
 
