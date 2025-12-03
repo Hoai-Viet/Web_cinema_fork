@@ -92,7 +92,7 @@ export default function MovieCombo({
             <p className="mt-3 text-lg uppercase text-center">{c.name}</p>
 
             <p className="text-sm text-gray-300">
-              {c.price.toLocaleString()} VND
+              {c.price.toLocaleString()} USD
             </p>
 
             <div className="flex items-center mt-3 bg-gray-700 px-3 rounded-lg gap-4">

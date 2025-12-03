@@ -5,12 +5,13 @@ import {
   faSquareInstagram,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
+import logo from "../assets/logo/logo.png";
 
 export default function Footer() {
   return (
     <footer className="flex items-center justify-between font-anton py-5 border-t-1 border-white bg-[#000235] px-40">
       {/* Logo */}
-      <div className="text-5xl text-white  ">Logo</div>
+      <img src={logo} alt="Logo" className="h-12" />
 
       {/* About us */}
       <div className="flex items-center gap-8">

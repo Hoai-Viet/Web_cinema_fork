@@ -43,7 +43,7 @@ export default function MovieTickets({
     }));
   };
 
-  // TÍNH TOTAL + LIST TICKET
+  // CALCULATE TOTAL + LIST TICKET
   useEffect(() => {
     const list = ticketTypes
       .map((t) => ({
@@ -54,7 +54,7 @@ export default function MovieTickets({
 
     const total = list.reduce((sum, t) => sum + t.base_price * t.quantity!, 0);
 
-    onChangeTotal(total, list); // TRẢ VỀ TOTAL + LIST
+    onChangeTotal(total, list); 
   }, [quantities, ticketTypes]);
 
   if (!showtimeId) return null;
@@ -75,7 +75,7 @@ export default function MovieTickets({
             <div key={t.id} className="border border-gray-500 rounded-xl p-6">
               <h2 className="text-yellow-300 text-xl">{t.name}</h2>
               <p className="text-white text-lg mt-2 font-normal">
-                {t.base_price.toLocaleString()} VND
+                {t.base_price.toLocaleString()} 
               </p>
 
               <div className="flex justify-center items-center gap-4 mt-5">

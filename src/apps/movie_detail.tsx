@@ -40,8 +40,6 @@ export default function MovieDetail() {
 
   return (
     <div className="flex flex-col justify-center items-center space-y-8 ">
-      <h1 className="text-white font-anton text-3xl">SHOWTIMES</h1>
-
       {/* MOVIE INFO */}
       <MovieInfo
         onLoaded={(title, age) => {
@@ -49,7 +47,7 @@ export default function MovieDetail() {
           setAgeRating(age);
         }}
       />
-
+      <h1 className="text-white font-anton text-3xl">SHOWTIMES</h1>
       {/* SHOWTIMES */}
       <MovieShowTime
         onSelectShowtime={(showtimeId, roomId) => {

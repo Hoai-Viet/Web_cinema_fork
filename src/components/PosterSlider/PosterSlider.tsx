@@ -83,7 +83,7 @@ export default function PosterSlider() {
               </div>
               <div className="flex items-center gap-1">
                 <FontAwesomeIcon icon={faClock} className="text-yellow-300" />
-                <p className="text-white">{m.duration_minutes} phút</p>
+                <p className="text-white">{m.duration_minutes}'</p>
               </div>
             </div>
             <div className="flex justify-center items-center">

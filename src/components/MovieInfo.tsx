@@ -39,8 +39,7 @@ export default function MovieInFo({
       .catch((err) => console.error("Error fetching movie detail:", err));
   }, [id]);
 
-  if (!movie)
-    return <p className="text-white text-center mt-10">Đang tải...</p>;
+  if (!movie) return <p className="text-white text-center mt-10">Loading...</p>;
 
   return (
     <div className="flex flex-col md:flex-row justify-center items-start text-white mt-10 gap-10">
@@ -100,7 +99,7 @@ export default function MovieInFo({
         {movie.description && (
           <div className="mt-6">
             <h2 className="text-xl font-roboto-semibold pb-2">MOVIE CONTENT</h2>
-            <p className="text-gray-300 leading-relaxed">{movie.description}</p>
+            <p className="text-white leading-relaxed">{movie.description}</p>
           </div>
         )}
       </div>

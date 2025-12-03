@@ -1,6 +1,7 @@
 import { Search, User, Ticket, Popcorn, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/logo/logo.png";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -15,7 +16,7 @@ export default function Navbar() {
     <nav className="flex items-center justify-between font-anton py-3 shadow-none border-b-1 border-white px-40 bg-[#000235]">
       {/* Logo */}
       <Link to="/" className="text-lg text-white">
-        Logo
+        <img src={logo} alt="Logo" className="h-10" />
       </Link>
 
       {/* Buttons */}
