@@ -24,7 +24,7 @@ export default function PosterSlider() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/movie/movies")
+    fetch("https://web-cinema-be.onrender.com/movie/movies")
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();

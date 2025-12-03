@@ -41,7 +41,7 @@ export default function AuthForm() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
+      const res = await fetch("https://web-cinema-be.onrender.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -129,18 +129,21 @@ export default function AuthForm() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          birthday,
-          email,
-          username,
-          password,
-          confirm_password: confirmPassword,
-        }),
-      });
+      const res = await fetch(
+        "https://web-cinema-be.onrender.com/auth/signup",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            birthday,
+            email,
+            username,
+            password,
+            confirm_password: confirmPassword,
+          }),
+        }
+      );
 
       const data = await res.json();
 

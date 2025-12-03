@@ -29,7 +29,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://127.0.0.1:5000/user/me", {
+    fetch("https://web-cinema-be.onrender.com/user/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -50,7 +50,7 @@ export default function ProfilePage() {
   // Update Profile
   // -------------------
   const handleUpdateProfile = async () => {
-    const res = await fetch("http://127.0.0.1:5000/user/me", {
+    const res = await fetch("https://web-cinema-be.onrender.com/user/me", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -77,17 +77,20 @@ export default function ProfilePage() {
       return;
     }
 
-    const res = await fetch("http://127.0.0.1:5000/user/me/change-password", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        old_password: passwordData.password,
-        new_password: passwordData.new_password,
-      }),
-    });
+    const res = await fetch(
+      "https://web-cinema-be.onrender.com/user/me/change-password",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          old_password: passwordData.password,
+          new_password: passwordData.new_password,
+        }),
+      }
+    );
 
     const data = await res.json();
     if (res.ok) {

@@ -30,7 +30,7 @@ export default function MovieInFo({
   const [movie, setMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/movie/movies/${id}`)
+    fetch(`https://web-cinema-be.onrender.com/movie/movies/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setMovie(data);

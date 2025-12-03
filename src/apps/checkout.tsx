@@ -80,7 +80,7 @@ export default function Checkout() {
         payment_method: "Cash",
       };
 
-      const resPay = await fetch("http://127.0.0.1:5000/payment", {
+      const resPay = await fetch("https://web-cinema-be.onrender.com/payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -116,14 +116,17 @@ export default function Checkout() {
       // ============================
       // STEP 3 — CREATE TICKETS
       // ============================
-      const resTicket = await fetch("http://127.0.0.1:5000/ticket", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(ticketsPayload),
-      });
+      const resTicket = await fetch(
+        "https://web-cinema-be.onrender.com/ticket",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(ticketsPayload),
+        }
+      );
 
       const ticketData = await resTicket.json();
 

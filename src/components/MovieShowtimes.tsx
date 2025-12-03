@@ -27,7 +27,7 @@ export default function MovieShowTime({
   );
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/showtime/movies/${id}/showtimes`)
+    fetch(`https://web-cinema-be.onrender.com/showtime/movies/${id}/showtimes`)
       .then((res) => res.json())
       .then((data) => {
         setShowtimes(data);

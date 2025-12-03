@@ -29,7 +29,7 @@ export default function MovieTheater({
     if (!showtimeId) return;
 
     setLoading(true);
-    fetch(`http://127.0.0.1:5000/showtime/${showtimeId}/cinema`)
+    fetch(`https://web-cinema-be.onrender.com/showtime/${showtimeId}/cinema`)
       .then((res) => res.json())
       .then((data) => {
         setCinema(data);

@@ -29,7 +29,7 @@ export default function MovieSeat({
       setLoading(true);
       try {
         const res = await fetch(
-          `http://127.0.0.1:5000/seat/${showtimeId}/seats`
+          `https://web-cinema-be.onrender.com/seat/${showtimeId}/seats`
         );
         if (!res.ok) throw new Error("Failed to load seats");
         const data = await res.json();

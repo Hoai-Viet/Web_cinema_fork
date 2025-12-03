@@ -26,7 +26,7 @@ export default function MovieCombo({
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/combo")
+    fetch("https://web-cinema-be.onrender.com/combo")
       .then((res) => res.json())
       .then((data) => {
         setCombos(data);
