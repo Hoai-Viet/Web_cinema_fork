@@ -67,10 +67,9 @@ export default function MovieDetail() {
         showtimeId={selectedShowtimeId}
         selectedCinemaId={selectedCinemaId}
         onSelectCinema={(cinemaId) => setSelectedCinemaId(cinemaId)}
-        onLoaded={(theaterName, theaterAddress, cinemaId) => {
+        onLoaded={(theaterName, theaterAddress) => {
           setTheaterName(theaterName);
           setTheaterAddress(theaterAddress);
-          setSelectedCinemaId(cinemaId); // FIX: nhận đúng cinema_id
         }}
       />
 
