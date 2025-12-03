@@ -8,7 +8,7 @@ export default function Home() {
       <ImageSliderContainer />
       <h1 className="text-white font-anton text-4xl">NOW SHOWING</h1>
       <PosterSlider />
-      <h1 className="text-white font-anton text-4xl">EVENT</h1>
+      <h1 className="text-white font-anton text-4xl mt-3">EVENT</h1>
       <Event />
     </div>
   );

@@ -16,7 +16,7 @@ export default function Navbar() {
     <nav className="flex items-center justify-between font-anton py-3 shadow-none border-b-1 border-white px-40 bg-[#000235]">
       {/* Logo */}
       <Link to="/" className="text-lg text-white">
-        <img src={logo} alt="Logo" className="h-10" />
+        <img src={logo} alt="Logo" className="h-15" />
       </Link>
 
       {/* Buttons */}

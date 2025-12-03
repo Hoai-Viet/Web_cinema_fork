@@ -157,8 +157,6 @@ export default function Checkout() {
   // ======================================================
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-[#030A28] to-[#0A0A2A] text-white px-12 py-12 font-roboto-semibold">
-      <h1 className="text-4xl mb-10">CHECKOUT</h1>
-
       <div className="bg-[#50589C] p-10 rounded-xl w-full max-w-3xl mx-auto shadow-lg border border-[#3B82F6]">
         {/* MOVIE + AGE */}
         <div className="flex justify-between items-start">
@@ -239,7 +237,7 @@ export default function Checkout() {
         {/* TOTAL */}
         <div className="border-t border-dotted border-white mt-8 pt-6 flex justify-between items-center text-3xl text-yellow-300">
           <span>TOTAL AMOUNT</span>
-          <span className="text-white">{finalTotal.toLocaleString()}đ</span>
+          <span className="text-white">{finalTotal.toLocaleString()} USD</span>
         </div>
       </div>
 

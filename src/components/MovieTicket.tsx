@@ -75,7 +75,7 @@ export default function MovieTickets({
             <div key={t.id} className="border border-gray-500 rounded-xl p-6">
               <h2 className="text-yellow-300 text-xl">{t.name}</h2>
               <p className="text-white text-lg mt-2 font-normal">
-                {t.base_price.toLocaleString()} 
+                {t.base_price.toLocaleString()} USD
               </p>
 
               <div className="flex justify-center items-center gap-4 mt-5">

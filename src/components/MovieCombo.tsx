@@ -41,9 +41,8 @@ export default function MovieCombo({
     setQuantities((prev) => {
       const currentTotal = Object.values(prev).reduce((s, q) => s + q, 0);
 
-      // Nếu bấm + nhưng tổng combo đã đủ số vé thì chặn lại
       if (diff > 0 && currentTotal >= totalTicketQty) {
-        return prev; // KHÔNG tăng thêm
+        return prev;
       }
 
       const newQty = Math.max(0, (prev[id] || 0) + diff);
@@ -55,7 +54,6 @@ export default function MovieCombo({
     });
   };
 
-  // Tính tổng + gửi ngược
   useEffect(() => {
     const list = combos
       .map((c) => ({
@@ -66,10 +64,8 @@ export default function MovieCombo({
 
     const total = list.reduce((sum, c) => sum + c.price * c.quantity!, 0);
 
-    // Gửi luôn combo_id chuẩn
     onChangeComboTotal(total, list);
 
-    // Gửi lên cả name + quantity + id
     onLoaded(
       list.map((c) => ({
         id: c.id,
@@ -81,36 +77,48 @@ export default function MovieCombo({
 
   return (
     <div className="text-white mb-10">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 font-anton">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 font-roboto-light">
         {combos.map((c) => (
-          <div key={c.id} className="flex flex-col items-center">
+          <div
+            key={c.id}
+            className="bg-[#1B1A3B] p-5 rounded-xl shadow-lg flex gap-4 items-start"
+          >
+            {/* IMAGE */}
             <img
               src={c.image_url}
-              className="w-40 h-40 object-cover rounded-lg shadow-lg"
+              className="w-28 h-32 object-cover rounded-lg shadow-xl"
             />
 
-            <p className="mt-3 text-lg uppercase text-center">{c.name}</p>
+            {/* TEXT */}
+            <div className="flex-1">
+              <p className="text-xl uppercase">{c.name}</p>
 
-            <p className="text-sm text-gray-300">
-              {c.price.toLocaleString()} USD
-            </p>
+              <p className="text-sm text-gray-200 leading-relaxed mt-1">
+                {c.description}
+              </p>
 
-            <div className="flex items-center mt-3 bg-gray-700 px-3 rounded-lg gap-4">
-              <button
-                onClick={() => changeQty(c.id, -1)}
-                className="px-3 py-1 bg-gray-600 rounded"
-              >
-                -
-              </button>
+              <p className="text-md text-yellow-300 mt-2">
+                {c.price.toLocaleString()} USD
+              </p>
 
-              <span className="w-4 text-center">{quantities[c.id]}</span>
+              {/* BUTTONS */}
+              <div className="flex items-center mt-3 px-3 py-1 rounded-lg gap-4 w-fit">
+                <button
+                  onClick={() => changeQty(c.id, -1)}
+                  className="px-3 py-1 bg-gray-600 rounded text-lg"
+                >
+                  –
+                </button>
 
-              <button
-                onClick={() => changeQty(c.id, +1)}
-                className="px-3 py-1 bg-gray-600 rounded"
-              >
-                +
-              </button>
+                <span className="w-4 text-center">{quantities[c.id]}</span>
+
+                <button
+                  onClick={() => changeQty(c.id, +1)}
+                  className="px-3 py-1 bg-gray-600 rounded text-lg"
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
         ))}

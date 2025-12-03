@@ -61,10 +61,10 @@ export default function PosterSlider() {
             <img
               src={m.poster_url}
               alt={m.title}
-              className="w-full h-[350px] object-cover border-white"
+              className="w-full h-[390px] object-cover"
             />
             <div
-              className="absolute inset-0 flex flex-col px-6 gap-y-1 justify-center items-start bg-black/65 opacity-0 h-[350px]
+              className="absolute inset-0 flex flex-col px-6 gap-y-1 justify-center items-start bg-black/65 opacity-0 h-[390px]
               hover:opacity-100 cursor-pointer transition-opacity duration-300"
             >
               <div className="text-white font-roboto-semibold mb-2 text-xl">
